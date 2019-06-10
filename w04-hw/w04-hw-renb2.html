@@ -439,15 +439,53 @@ Y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \epsilon_i.
 <li>A conclusion in the context of the problem</li>
 </ul>
 <p>When reporting these, you should explicitly state them in your document, not assume that a reader will find and interpret them from a large block of <code>R</code> output.</p>
-<p><strong>(b)</strong> Output only the estimated regression coefficients. Interpret all <span class="math inline">\(\hat{\beta}_j\)</span> coefficients in the context of the problem.</p>
-<p><strong>(c)</strong> Use your model to predict the number of <code>Calories</code> in a Big Mac. According to <a href="https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html">McDonald’s publicized nutrition facts</a>, the Big Mac contains 28g of fat, 9g of sugar, and 950mg of sodium.</p>
-<p><strong>(d)</strong> Calculate the standard deviation, <span class="math inline">\(s_y\)</span>, for the observed values in the Calories variable. Report the value of <span class="math inline">\(s_e\)</span> from your multiple regression model. Interpret both estimates in the context of this problem.</p>
-<p><strong>(e)</strong> Report the value of <span class="math inline">\(R^2\)</span> for the model. Interpret its meaning in the context of the problem.</p>
-<p><strong>(f)</strong> Calculate a 95% confidence interval for <span class="math inline">\(\beta_2\)</span>. Give an interpretation of the interval in the context of the problem.</p>
-<p><strong>(g)</strong> Calculate a 99% confidence interval for <span class="math inline">\(\beta_0\)</span>. Give an interpretation of the interval in the context of the problem.</p>
-<p><strong>(h)</strong> Use a 90% confidence interval to estimate the mean Calorie content of a food with 24g of fat, 0g of sugar, and 350mg of sodium, which is true of a large order of McDonald’s french fries. Interpret the interval in context.</p>
-<p><strong>(i)</strong> Use a 90% prediction interval to predict the Calorie content of a Taco Bell Crunchwrap Supreme that has 21g of fat, 6g of sugar, and 1200mg of sodium. Interpret the interval in context.</p>
-<hr />
+<pre class="r"><code>library(readr)
+nutrition_data = read_csv(&quot;nutrition-2018.csv&quot;)
+nutrition_model = lm(Calories ~ Fat + Sugar + Sodium, data = nutrition_data)
+null_nutrition_model = lm(Calories ~ 1, data = nutrition_data)
+anova_nutrition_model = anova(null_nutrition_model, nutrition_model)</code></pre>
+<ul>
+<li>The null and alternative test that we will perform can be written as <span class="math inline">\(H_0: \beta_i = 0\)</span> vs <span class="math inline">\(H_1: \beta_i \neq 0\)</span> which means we will check whether <span class="math inline">\(x_{i1}\)</span> is <code>Fat</code>, <span class="math inline">\(x_{i2}\)</span> is <code>Sugar</code>, and <span class="math inline">\(x_{i3}\)</span> is <code>Sodium</code> has a linear relationship with <span class="math inline">\(Y\)</span> is <code>Calories</code>. we are specifically testing for <span class="math inline">\(\beta_i = 0\)</span> and can think of model this way, <br />
+<ul>
+<li>Under <span class="math inline">\(H_0\)</span>, <span class="math inline">\(\beta_i = 0 for j = 1, 2, 3\)</span>. <br /></li>
+<li>Under <span class="math inline">\(H_1\)</span>, <span class="math inline">\(\beta_j \neq 0 for j = 1, 2, 3\)</span>. <br /></li>
+</ul></li>
+<li>The value of test statistics is <span class="math inline">\(6590.9402239\)</span>.</li>
+<li>The p-value of the test is <span class="math inline">\(0\)</span>.</li>
+<li>Using <span class="math inline">\(\alpha = 0.01\)</span> value compared to p-value of <span class="math inline">\(0\)</span>, we would reject the null hypothesis thus stating there is a significant linear relationship between <span class="math inline">\(Calories\)</span> and at least one of the predictors (<span class="math inline">\(Fat\)</span>, <span class="math inline">\(Sugar\)</span>, and <span class="math inline">\(Sodium\)</span>).</li>
+<li>Under the null hypothesis, we assumed no linear relation between (<span class="math inline">\(Fat\)</span>, <span class="math inline">\(Sugar\)</span>, and <span class="math inline">\(Sodium\)</span>) and <span class="math inline">\(Calories\)</span> but using t test and p-value we proved a significant linear relationship between at least one of (<span class="math inline">\(Fat\)</span>, <span class="math inline">\(Sugar\)</span>, and <span class="math inline">\(Sodium\)</span>) and <span class="math inline">\(Calories\)</span>. <br /> <br /> <strong>(b)</strong> Output only the estimated regression coefficients. Interpret all <span class="math inline">\(\hat{\beta}_j\)</span> coefficients in the context of the problem.</li>
+</ul>
+<pre class="r"><code>summary(nutrition_model)$coefficients[,1]</code></pre>
+<pre><code>##  (Intercept)          Fat        Sugar       Sodium 
+## 1.004561e+02 8.483289e+00 3.900517e+00 6.165246e-03</code></pre>
+<ul>
+<li>The <span class="math inline">\(intercept\)</span> is 100.4560567 which means that for <span class="math inline">\(0\)</span> values for <span class="math inline">\(Fat\)</span>, <span class="math inline">\(Sugar\)</span>, and <span class="math inline">\(Sodium\)</span> we will have that many calories which is a bit odd, but possibly this is due to low fat, sugar, and sodium foods.</li>
+<li>The <span class="math inline">\(Fat\)</span> is 8.4832891 which means that as <span class="math inline">\(Fat\)</span> increases by <span class="math inline">\(1 g\)</span> the <span class="math inline">\(Calories\)</span> goes up by that value, which makes sense as this is close to the expected value of <span class="math inline">\(9\)</span>.</li>
+<li>The <span class="math inline">\(Sugar\)</span> is 3.9005172 which means that as <span class="math inline">\(Sugar\)</span> increases by <span class="math inline">\(1 g\)</span> the <span class="math inline">\(Calories\)</span> goes up by that value, which makes sense as this is close to the expected value of <span class="math inline">\(4\)</span>.</li>
+<li>The <span class="math inline">\(Sodium\)</span> is 0.0061652 which means that as <span class="math inline">\(Sodium\)</span> increases by <span class="math inline">\(1 mg\)</span> the <span class="math inline">\(Calories\)</span> goes up by that value, which makes sense as this is close to the expected value of <span class="math inline">\(0\)</span>. <br /> <strong>(c)</strong> Use your model to predict the number of <code>Calories</code> in a Big Mac. According to <a href="https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html">McDonald’s publicized nutrition facts</a>, the Big Mac contains 28g of fat, 9g of sugar, and 950mg of sodium.</li>
+</ul>
+<pre class="r"><code>new_nutrition = data.frame(Fat = 28, Sugar = 9, Sodium = 950)
+pred = predict(nutrition_model, newdata = new_nutrition)</code></pre>
+<p>The predicted <span class="math inline">\(Calories\)</span> value is <span class="math inline">\(378.9497894\)</span>. <br /> <strong>(d)</strong> Calculate the standard deviation, <span class="math inline">\(s_y\)</span>, for the observed values in the Calories variable. Report the value of <span class="math inline">\(s_e\)</span> from your multiple regression model. Interpret both estimates in the context of this problem.</p>
+<pre class="r"><code>sd_y = sd(nutrition_data$Calories)
+s_e = summary(nutrition_model)$sigma</code></pre>
+<p>The standard deviation is <span class="math inline">\(168.0499661\)</span> and <span class="math inline">\(s_e\)</span> is <span class="math inline">\(80.8543023\)</span> TODO: INTERPRET DATA <br /> <strong>(e)</strong> Report the value of <span class="math inline">\(R^2\)</span> for the model. Interpret its meaning in the context of the problem.</p>
+<pre class="r"><code>r_s = summary(nutrition_model)$r.squared</code></pre>
+<p>The <span class="math inline">\(R^2\)</span> value is <span class="math inline">\(0.7686281\)</span> TODO: INTERPRET VALUES <br /> <strong>(f)</strong> Calculate a 95% confidence interval for <span class="math inline">\(\beta_2\)</span>. Give an interpretation of the interval in the context of the problem.</p>
+<pre class="r"><code>confint(nutrition_model, level = 0.95)[3,]</code></pre>
+<pre><code>##    2.5 %   97.5 % 
+## 3.760541 4.040494</code></pre>
+<p>TODO: INTERPRET VALUES <br /> <strong>(g)</strong> Calculate a 99% confidence interval for <span class="math inline">\(\beta_0\)</span>. Give an interpretation of the interval in the context of the problem.</p>
+<pre class="r"><code>confint(nutrition_model, level = 0.99)[1,]</code></pre>
+<pre><code>##     0.5 %    99.5 % 
+##  96.82624 104.08588</code></pre>
+<p>TODO: INTERPRET VALUES <br /> <strong>(h)</strong> Use a 90% confidence interval to estimate the mean Calorie content of a food with 24g of fat, 0g of sugar, and 350mg of sodium, which is true of a large order of McDonald’s french fries. Interpret the interval in context.</p>
+<pre class="r"><code>new_fries = data.frame(Fat = 24, Sugar = 0, Sodium = 350)
+predict_fries = predict(nutrition_model, newdata = new_fries, interval = &quot;confidence&quot;, level = 0.90)</code></pre>
+<p>TODO: INTERPRET VALUES <br /> <strong>(i)</strong> Use a 90% prediction interval to predict the Calorie content of a Taco Bell Crunchwrap Supreme that has 21g of fat, 6g of sugar, and 1200mg of sodium. Interpret the interval in context.</p>
+<pre class="r"><code>new_crunchwrap = data.frame(Fat = 21, Sugar = 6, Sodium = 1200)
+predict_crunchwrap = predict(nutrition_model, newdata = new_crunchwrap, interval = &quot;prediction&quot;, level = 0.90)</code></pre>
+<p>TODO: INTERPRET VALUES <br /> ***</p>
 </div>
 <div id="exercise-2-more-lm-for-multiple-regression" class="section level2">
 <h2>Exercise 2 (More <code>lm</code> for Multiple Regression)</h2>

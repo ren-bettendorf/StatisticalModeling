@@ -60,23 +60,83 @@ Use an $F$-test to test the significance of the regression. Report the following
 - A conclusion in the context of the problem
 
 When reporting these, you should explicitly state them in your document, not assume that a reader will find and interpret them from a large block of `R` output.
-
+```{r message=FALSE, warning=FALSE}
+library(readr)
+nutrition_data = read_csv("nutrition-2018.csv")
+nutrition_model = lm(Calories ~ Fat + Sugar + Sodium, data = nutrition_data)
+null_nutrition_model = lm(Calories ~ 1, data = nutrition_data)
+anova_nutrition_model = anova(null_nutrition_model, nutrition_model)
+```
++ The null and alternative test that we will perform can be written as $H_0: \beta_i = 0$ vs $H_1: \beta_i \neq 0$ which means we will check whether $x_{i1}$ is `Fat`, $x_{i2}$ is `Sugar`, and $x_{i3}$ is `Sodium` has a linear relationship with $Y$ is `Calories`.
+   we are specifically testing for $\beta_i = 0$ and can think of model this way, 
+   <br/>
+    - Under $H_0$, $\beta_i = 0 for j = 1, 2, 3$.
+   <br/>
+    - Under $H_1$, $\beta_j \neq 0 for j = 1, 2, 3$.
+    <br />
++ The value of test statistics  is $`r anova_nutrition_model[2,5]`$. 
++ The p-value of the test  is $`r anova_nutrition_model[2,6]`$.
++ Using $\alpha = 0.01$ value compared to p-value of $`r anova_nutrition_model[2,6]`$, we would reject the null hypothesis thus stating there is a significant linear relationship between $Calories$ and at least one of the predictors ($Fat$, $Sugar$, and $Sodium$).
++ Under the null hypothesis, we assumed no linear relation between ($Fat$, $Sugar$, and $Sodium$) and $Calories$ but using t test and p-value we proved a significant linear relationship between at least one of ($Fat$, $Sugar$, and $Sodium$) and $Calories$.
+<br />
+<br />
 **(b)** Output only the estimated regression coefficients. Interpret all $\hat{\beta}_j$ coefficients in the context of the problem.
-
+```{r}
+summary(nutrition_model)$coefficients[,1]
+```
++ The $intercept$ is `r summary(nutrition_model)$coefficients[1,1]` which means that for $0$ values for $Fat$, $Sugar$, and $Sodium$ we will have that many calories which is a bit odd, but possibly this is due to low fat, sugar, and sodium foods.
++ The $Fat$ is `r summary(nutrition_model)$coefficients[2,1]` which means that as $Fat$ increases by $1 g$ the $Calories$ goes up by that value, which makes sense as this is close to the expected value of $9$.
++ The $Sugar$ is `r summary(nutrition_model)$coefficients[3,1]` which means that as $Sugar$ increases by $1 g$ the $Calories$ goes up by that value, which makes sense as this is close to the expected value of $4$.
++ The $Sodium$ is `r summary(nutrition_model)$coefficients[4,1]` which means that as $Sodium$ increases by $1 mg$ the $Calories$ goes up by that value, which makes sense as this is close to the expected value of $0$.
+<br />
 **(c)** Use your model to predict the number of `Calories` in a Big Mac. According to [McDonald's publicized nutrition facts](https://www.mcdonalds.com/us/en-us/about-our-food/nutrition-calculator.html), the Big Mac contains 28g of fat, 9g of sugar, and 950mg of sodium.
-
+```{r}
+new_nutrition = data.frame(Fat = 28, Sugar = 9, Sodium = 950)
+pred = predict(nutrition_model, newdata = new_nutrition)
+```
+The predicted $Calories$ value is $`r pred`$.
+<br />
 **(d)** Calculate the standard deviation, $s_y$, for the observed values in the Calories variable. Report the value of $s_e$ from your multiple regression model. Interpret both estimates in the context of this problem.
-
+```{r}
+sd_y = sd(nutrition_data$Calories)
+s_e = summary(nutrition_model)$sigma
+```
+The standard deviation is $`r sd_y`$ and $s_e$ is $`r s_e`$
+TODO: INTERPRET DATA
+<br />
 **(e)** Report the value of $R^2$ for the model. Interpret its meaning in the context of the problem.
-
+```{r}
+r_s = summary(nutrition_model)$r.squared
+```
+The $R^2$ value is $`r r_s`$
+TODO: INTERPRET VALUES
+<br />
 **(f)** Calculate a 95% confidence interval for $\beta_2$. Give an interpretation of the interval in the context of the problem.
-
+```{r}
+confint(nutrition_model, level = 0.95)[3,]
+```
+TODO: INTERPRET VALUES
+<br />
 **(g)** Calculate a 99% confidence interval for $\beta_0$. Give an interpretation of the interval in the context of the problem.
-
+```{r}
+confint(nutrition_model, level = 0.99)[1,]
+```
+TODO: INTERPRET VALUES
+<br />
 **(h)** Use a 90% confidence interval to estimate the mean Calorie content of a food with 24g of fat, 0g of sugar, and 350mg of sodium, which is true of a large order of McDonald's french fries. Interpret the interval in context.
- 
+```{r}
+new_fries = data.frame(Fat = 24, Sugar = 0, Sodium = 350)
+predict_fries = predict(nutrition_model, newdata = new_fries, interval = "confidence", level = 0.90)
+```
+TODO: INTERPRET VALUES
+<br />
 **(i)** Use a 90% prediction interval to predict the Calorie content of a Taco Bell Crunchwrap Supreme that has 21g of fat, 6g of sugar, and 1200mg of sodium. Interpret the interval in context.
-
+```{r}
+new_crunchwrap = data.frame(Fat = 21, Sugar = 6, Sodium = 1200)
+predict_crunchwrap = predict(nutrition_model, newdata = new_crunchwrap, interval = "prediction", level = 0.90)
+```
+TODO: INTERPRET VALUES
+<br />
 ***
 
 ## Exercise 2 (More `lm` for Multiple Regression)
