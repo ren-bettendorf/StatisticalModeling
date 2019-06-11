@@ -291,9 +291,11 @@ However, we will now evaluate it on both the **train** set and the **test** set 
 
 Set a seed of `1`, and then split the `Auto` data into two datasets, one called `auto_trn` and one called `auto_tst`. The `auto_trn` data frame should contain 292 randomly chosen observations. The `auto_tst` data will contain the remaining observations. Hint: consider the following code:
 
-```{r, eval = FALSE}
+```{r}
 set.seed(1)
 auto_trn_idx = sample(1:nrow(Auto), 292)
+auto_trn = Auto[auto_trn_idx, ]
+auto_tst = Auto[-auto_trn_idx, ]
 ```
 
 Fit a total of five models using the training data.
@@ -303,7 +305,28 @@ Fit a total of five models using the training data.
 - The remaining three you can pick to be anything you like. One of these should be the *best* of the five for predicting the response.
 
 For each model report the **train** and **test** RMSE. Arrange your results in a well-formatted markdown table. Argue that one of your models is the best for predicting the response.
-
+```{r}
+model_all = lm(mpg ~ cylinders + horsepower + weight + acceleration + year + origin, data = auto_trn)
+model_disp = lm(mpg ~ displacement, data = auto_trn)
+model_1 = lm(mpg ~ cylinders + horsepower + weight + acceleration + year, data = auto_trn)
+model_2 = lm(mpg ~ horsepower + weight + cylinders, data = auto_trn)
+model_3 = lm(mpg ~ origin + weight, data = auto_trn)
+```
+```{r}
+train_model_all = sqrt(sum(residuals(model_all)^2) / length(residuals(model_all)))
+train_model_disp = sqrt(sum(residuals(model_disp)^2) / length(residuals(model_disp)))
+train_model_1 = sqrt(sum(residuals(model_1)^2) / length(residuals(model_1)))
+train_model_2 = sqrt(sum(residuals(model_2)^2) / length(residuals(model_2)))
+train_model_3 = sqrt(sum(residuals(model_3)^2) / length(residuals(model_3)))
+```
+```{r}
+test_model_all = sqrt(sum((auto_tst$ozone - predict(model_all, newdata=auto_tst))^2) / length(auto_tst$ozone))
+test_model_disp = sqrt(sum((auto_tst$ozone - predict(model_disp, newdata=auto_tst))^2) / length(auto_tst$ozone))
+test_model_1 = sqrt(sum((auto_tst$ozone - predict(model_1, newdata=auto_tst))^2) / length(auto_tst$ozone))
+test_model_2 = sqrt(sum((auto_tst$ozone - predict(model_2, newdata=auto_tst))^2) / length(auto_tst$ozone))
+test_model_3 = sqrt(sum((auto_tst$ozone - predict(model_3, newdata=auto_tst))^2) / length(auto_tst$ozone))
+```
+TODO: CREATE TABLE
 ***
 
 ## Exercise 5 (Simulating Multiple Regression)
@@ -346,21 +369,76 @@ Report the sum of the diagonal of `C` as well as the 5th row of `sim_data`. For 
 ```{r}
 set.seed(420)
 sample_size = 42
+
+beta_0 = 2
+beta_1 = -0.75
+beta_2 = 1.5
+beta_3 = 0
+beta_4 = 0
+beta_5 = 2
+sigma = 5
+
+x0 = rep(1, sample_size)
+x1 = rnorm(sample_size, 0, 2)
+x2 = runif(sample_size, 0, 4)
+x3 = rnorm(sample_size, 0, 1)
+x4 = runif(sample_size, -2, 2)
+x5 = rnorm(sample_size, 0, 2)
+X = cbind(x0, x1, x2, x3, x4, x5)
+C = solve(t(X) %*% X)
+y = rep(0, sample_size)
+sim_data = data.frame(y, x1, x2, x3, x4, x5)
+sum_diag = sum(diag(C))
+sim_data_5 = sim_data[5,]
 ```
 
 **(b)** Create three vectors of length `2500` that will store results from the simulation in part **(c)**. Call them `beta_hat_1`, `beta_3_pval`, and `beta_5_pval`.
+```{r}
+n = 2500
+beta_hat_1 = rep(0, n)
+beta_3_pval = rep(0, n)
+beta_5_pval = rep(0, n)
+```
 
 **(c)** Simulate 2500 samples of size `n = 42` from the model above. Each time update the `y` value of `sim_data`. Then use `lm()` to fit a multiple regression model. Each time store:
 
 - The value of $\hat{\beta}_1$ in `beta_hat_1`
 - The p-value for the two-sided test of $\beta_3 = 0$ in `beta_3_pval`
 - The p-value for the two-sided test of $\beta_5 = 0$ in `beta_5_pval`
+```{r}
+for(i in 1:n) {
+  eps = rnorm(sample_size, mean = 0, sd = sigma)
+  sim_data$y = beta_0 + beta_1 * x1 + beta_2 * x2 + beta_3 * x3 + beta_4 * x4 + beta_5 * x5 + eps
+  sim_model = lm(y ~ x1 + x2 + x3 + x4 + x5, data = sim_data)
+  beta_hat_1[i] = coef(sim_model)[2]
+  beta_3_pval[i] = summary(sim_model)$coefficients[4, 4]
+  beta_5_pval[i] = summary(sim_model)$coefficients[6, 4]
+} 
+```
 
 **(d)** Based on the known values of $X$, what is the true distribution of $\hat{\beta}_1$?
+```{r}
+beta_1
+var(beta_hat_1)
+```
 
 **(e)** Calculate the mean and variance of `beta_hat_1`. Are they close to what we would expect? Plot a histogram of `beta_hat_1`. Add a curve for the true distribution of $\hat{\beta}_1$. Does the curve seem to match the histogram?
+```{r}
+mean_beta_hat_1 = mean(beta_hat_1)
+var_beta_hat_1 = var(beta_hat_1)
+hist(beta_hat_1, prob = TRUE, breaks =20, xlab = expression(hat(beta)[1]),   main = "Histogram of beta_hat_1", border = "dodgerblue")
+curve(dnorm(x, mean = beta_1, sd = sqrt(sigma^2 * C[2, 2])), col = "darkorange", add = TRUE, lwd = 3)
+```
 
 **(f)** What proportion of the p-values stored in `beta_3_pval` is less than 0.10? Is this what you would expect?
+```{r}
+proportion_beta_3 = sum(beta_3_pval < 0.1)
+proportion_beta_3 / length(beta_3_pval)
+```
 
 **(g)** What proportion of the p-values stored in `beta_5_pval` is less than 0.01? Is this what you would expect?
+```{r}
+proportion_beta_5 = sum(beta_5_pval < 0.1)
+proportion_beta_5 / length(beta_5_pval)
+```
 
