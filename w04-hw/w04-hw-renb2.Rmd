@@ -158,6 +158,13 @@ For this exercise we will consider three models, each with Wins as the response.
 - Model 1: Goals Against, Saves
 - Model 2: Goals Against, Saves, Shots Against, Minutes, Shutouts
 - Model 3: All Available
+```{r message=FALSE, warning=FALSE}
+library(readr)
+goalies_data = read_csv("goalies.csv")
+model_1 = lm(W ~ GA + SV, data = goalies_data)
+model_2 = lm(W ~ GA + SV + SA + MIN + SO, data = goalies_data)
+model_3 = lm(W ~ GA + SV + SA + SV_PCT + GAA + SO + MIN + PIM, data = goalies_data)
+```
 
 **(a)** Use an $F$-test to compares Models 1 and 2. Report the following:
 
@@ -166,6 +173,10 @@ For this exercise we will consider three models, each with Wins as the response.
 - The p-value of the test
 - A statistical decision at $\alpha = 0.05$
 - The model you prefer
+```{r}
+anova_1_2 = anova(model_1, model_2)
+anova_1_2
+```
 
 **(b)** Use an $F$-test to compare Model 3 to your preferred model from part **(a)**. Report the following:
 
@@ -174,13 +185,20 @@ For this exercise we will consider three models, each with Wins as the response.
 - The p-value of the test
 - A statistical decision at $\alpha = 0.05$
 - The model you prefer
-
+```{r}
+anova_2_3 = anova(model_2, model_3)
+anova_2_3
+```
 **(c)** Use a $t$-test to test $H_0: \beta_{\texttt{SV}} = 0 \ \text{vs} \ H_1: \beta_{\texttt{SV}} \neq 0$ for the model you preferred in part **(b)**. Report the following:
 
 - The value of the test statistic
 - The p-value of the test
 - A statistical decision at $\alpha = 0.05$
-
+```{r}
+test_stat_goal = summary(model_2)$coef[3,3]
+p_value_goal = summary(model_2)$coef[3,4]
+```
+TODO: PUT VALUES IN HERE
 ***
 
 ## Exercise 3 (Regression without `lm`)
@@ -195,14 +213,51 @@ Ozone = Ozone[complete.cases(Ozone), ]
 ```
 
 **(a)** Obtain the estimated regression coefficients **without** the use of `lm()` or any other built-in functions for regression. That is, you should use only matrix operations. Store the results in a vector `beta_hat_no_lm`. To ensure this is a vector, you may need to use `as.vector()`. Return this vector as well as the results of `sum(beta_hat_no_lm ^ 2)`.
+```{r}
+n = nrow(Ozone)
+X = cbind(rep(1,n), Ozone$wind, Ozone$humidity, Ozone$temp)
+y = Ozone$ozone
 
+beta_hat_no_lm = as.vector(solve(t(X) %*% X) %*% t(X) %*% y)
+sum(beta_hat_no_lm^2)
+```
+TODO: DOUBLE CHECK THIS VALUE
+<br />
 **(b)** Obtain the estimated regression coefficients **with** the use of `lm()`. Store the results in a vector `beta_hat_lm`. To ensure this is a vector, you may need to use `as.vector()`. Return this vector as well as the results of `sum(beta_hat_lm ^ 2)`.
+```{r}
+ozone_model = lm(ozone ~ wind + humidity + temp, data = Ozone)
 
+beta_hat_lm = as.vector(coef(ozone_model))
+sum(beta_hat_lm^2)
+```
+TODO: DOUBLE CHECK THIS VALUE
+<br />
 **(c)** Use the `all.equal()` function to verify that the results are the same. You may need to remove the names of one of the vectors. The `as.vector()` function will do this as a side effect, or you can directly use `unname()`.
+```{r}
+all.equal(beta_hat_no_lm, beta_hat_lm)
+```
 
 **(d)** Calculate $s_e$ without the use of `lm()`. That is, continue with your results from **(a)** and perform additional matrix operations to obtain the result. Output this result. Also, verify that this result is the same as the result obtained from `lm()`.
+```{r}
+y_hat <- X %*% solve(t(X) %*% X) %*% t(X) %*% y
+e = y - y_hat
+p = ncol(Ozone)
+
+s_e_no_lm = as.vector(sqrt(t(e) %*% e / (n - p)))
+s_e_lm = as.vector(summary(ozone_model)$sigma)
+
+all.equal(s_e_no_lm, s_e_lm)
+```
 
 **(e)** Calculate $R^2$ without the use of `lm()`. That is, continue with your results from **(a)** and **(d)**, and perform additional operations to obtain the result. Output this result. Also, verify that this result is the same as the result obtained from `lm()`.
+```{r}
+SSReg = sum((y_hat - mean(y))^2)
+SSTotal = sum((y - mean(y))^2)
+
+r_square_no_lm = as.vector(SSReg / SSTotal)
+r_square_lm = summary(ozone_model)$r.squared
+all.equal(r_square_no_lm, r_square_lm)
+```
 
 ***
 
