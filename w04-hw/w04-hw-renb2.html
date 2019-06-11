@@ -469,23 +469,19 @@ pred = predict(nutrition_model, newdata = new_nutrition)</code></pre>
 <p>The predicted <span class="math inline">\(Calories\)</span> value is <span class="math inline">\(378.9497894\)</span>. <br /> <strong>(d)</strong> Calculate the standard deviation, <span class="math inline">\(s_y\)</span>, for the observed values in the Calories variable. Report the value of <span class="math inline">\(s_e\)</span> from your multiple regression model. Interpret both estimates in the context of this problem.</p>
 <pre class="r"><code>sd_y = sd(nutrition_data$Calories)
 s_e = summary(nutrition_model)$sigma</code></pre>
-<p>The standard deviation is <span class="math inline">\(168.0499661\)</span> and <span class="math inline">\(s_e\)</span> is <span class="math inline">\(80.8543023\)</span> TODO: INTERPRET DATA <br /> <strong>(e)</strong> Report the value of <span class="math inline">\(R^2\)</span> for the model. Interpret its meaning in the context of the problem.</p>
+<p>The standard deviation is <span class="math inline">\(168.0499661\)</span> and <span class="math inline">\(s_e\)</span> is <span class="math inline">\(80.8543023\)</span>. This means that the standard deviation of the actual data is <span class="math inline">\(168.0499661\)</span> while the model we used to predict <span class="math inline">\(Calories\)</span> was <span class="math inline">\(80.8543023\)</span>. <br /> <strong>(e)</strong> Report the value of <span class="math inline">\(R^2\)</span> for the model. Interpret its meaning in the context of the problem.</p>
 <pre class="r"><code>r_s = summary(nutrition_model)$r.squared</code></pre>
-<p>The <span class="math inline">\(R^2\)</span> value is <span class="math inline">\(0.7686281\)</span> TODO: INTERPRET VALUES <br /> <strong>(f)</strong> Calculate a 95% confidence interval for <span class="math inline">\(\beta_2\)</span>. Give an interpretation of the interval in the context of the problem.</p>
-<pre class="r"><code>confint(nutrition_model, level = 0.95)[3,]</code></pre>
-<pre><code>##    2.5 %   97.5 % 
-## 3.760541 4.040494</code></pre>
-<p>TODO: INTERPRET VALUES <br /> <strong>(g)</strong> Calculate a 99% confidence interval for <span class="math inline">\(\beta_0\)</span>. Give an interpretation of the interval in the context of the problem.</p>
-<pre class="r"><code>confint(nutrition_model, level = 0.99)[1,]</code></pre>
-<pre><code>##     0.5 %    99.5 % 
-##  96.82624 104.08588</code></pre>
-<p>TODO: INTERPRET VALUES <br /> <strong>(h)</strong> Use a 90% confidence interval to estimate the mean Calorie content of a food with 24g of fat, 0g of sugar, and 350mg of sodium, which is true of a large order of McDonald’s french fries. Interpret the interval in context.</p>
+<p>The <span class="math inline">\(R^2\)</span> value is <span class="math inline">\(0.7686281\)</span>. <br /> This means that we have <span class="math inline">\(0.7686281\)</span> proportion of variability in the data for <span class="math inline">\(Calories\)</span> as predicted by <span class="math inline">\(Fat\)</span>, <span class="math inline">\(Sugar\)</span>, and <span class="math inline">\(Sodium\)</span>. <br /> <strong>(f)</strong> Calculate a 95% confidence interval for <span class="math inline">\(\beta_2\)</span>. Give an interpretation of the interval in the context of the problem.</p>
+<pre class="r"><code>conf_beta_2 = confint(nutrition_model, level = 0.95)[3,]</code></pre>
+<p>This shows that the value we predicted <span class="math inline">\((3.7605409, 4.0404935)\)</span> as using was actually failed to be rejected as it resides inside of this range so we would reject the null hypothesis. <br /> <strong>(g)</strong> Calculate a 99% confidence interval for <span class="math inline">\(\beta_0\)</span>. Give an interpretation of the interval in the context of the problem.</p>
+<pre class="r"><code>conf_beta_0 = confint(nutrition_model, level = 0.99)[1,]</code></pre>
+<p>This shows that the value we predicted <span class="math inline">\((96.8262377, 104.0858756)\)</span> as using was actually failed to be rejected as it resides inside of this range so we would reject the null hypothesis. <br /> <strong>(h)</strong> Use a 90% confidence interval to estimate the mean Calorie content of a food with 24g of fat, 0g of sugar, and 350mg of sodium, which is true of a large order of McDonald’s french fries. Interpret the interval in context.</p>
 <pre class="r"><code>new_fries = data.frame(Fat = 24, Sugar = 0, Sodium = 350)
 predict_fries = predict(nutrition_model, newdata = new_fries, interval = &quot;confidence&quot;, level = 0.90)</code></pre>
-<p>TODO: INTERPRET VALUES <br /> <strong>(i)</strong> Use a 90% prediction interval to predict the Calorie content of a Taco Bell Crunchwrap Supreme that has 21g of fat, 6g of sugar, and 1200mg of sodium. Interpret the interval in context.</p>
+<p>Thus we created a range of <span class="math inline">\((306.2128307, 303.8032608)\)</span> which means that the <span class="math inline">\(Calorie\)</span> value we produced within <span class="math inline">\(90%\)</span> should reside in that range for a McDonald’s french frie. <br /> <strong>(i)</strong> Use a 90% prediction interval to predict the Calorie content of a Taco Bell Crunchwrap Supreme that has 21g of fat, 6g of sugar, and 1200mg of sodium. Interpret the interval in context.</p>
 <pre class="r"><code>new_crunchwrap = data.frame(Fat = 21, Sugar = 6, Sodium = 1200)
 predict_crunchwrap = predict(nutrition_model, newdata = new_crunchwrap, interval = &quot;prediction&quot;, level = 0.90)</code></pre>
-<p>TODO: INTERPRET VALUES <br /> ***</p>
+<p>Thus we created a range of <span class="math inline">\((309.4065259, 176.3678466)\)</span> which means that the <span class="math inline">\(Calorie\)</span> value we produced based upon our McDonald information would predict this range for the Calories of a Taco Bell Crunchwrap. <br /> ***</p>
 </div>
 <div id="exercise-2-more-lm-for-multiple-regression" class="section level2">
 <h2>Exercise 2 (More <code>lm</code> for Multiple Regression)</h2>
@@ -520,45 +516,45 @@ model_3 = lm(W ~ GA + SV + SA + SV_PCT + GAA + SO + MIN + PIM, data = goalies_da
 <li>A statistical decision at <span class="math inline">\(\alpha = 0.05\)</span></li>
 <li>The model you prefer</li>
 </ul>
-<pre class="r"><code>anova_1_2 = anova(model_1, model_2)
-anova_1_2</code></pre>
-<pre><code>## Analysis of Variance Table
-## 
-## Model 1: W ~ GA + SV
-## Model 2: W ~ GA + SV + SA + MIN + SO
-##   Res.Df    RSS Df Sum of Sq      F    Pr(&gt;F)    
-## 1    459 294757                                  
-## 2    456  72899  3    221858 462.59 &lt; 2.2e-16 ***
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p><strong>(b)</strong> Use an <span class="math inline">\(F\)</span>-test to compare Model 3 to your preferred model from part <strong>(a)</strong>. Report the following:</p>
+<pre class="r"><code>anova_1_2 = anova(model_1, model_2)</code></pre>
 <ul>
-<li>The null hypothesis</li>
-<li>The value of the test statistic</li>
-<li>The p-value of the test</li>
-<li>A statistical decision at <span class="math inline">\(\alpha = 0.05\)</span></li>
-<li>The model you prefer</li>
+<li><p>For this problem we will use Model 1 as the null hypothesis as it is a subset of Model 2 thus: <br /></p>
+<ul>
+<li>Under <span class="math inline">\(H_0\)</span>, <span class="math inline">\(\beta_{Goals.Against,Saves} = 0\)</span>. <br /></li>
+<li>Under <span class="math inline">\(H_1\)</span>, <span class="math inline">\(\beta_{Goals.Against,Saves} \neq 0\)</span>. <br /></li>
+</ul></li>
+<li><p>The value of test statistics is <span class="math inline">\(462.5934999\)</span>.</p></li>
+<li><p>The p-value of the test is <span class="math inline">\(6.8082472\times 10^{-138}\)</span>.</p></li>
+<li><p>Using <span class="math inline">\(\alpha = 0.01\)</span> value compared to p-value of <span class="math inline">\(6.8082472\times 10^{-138}\)</span>, we would reject the null hypothesis thus stating there is a significant linear relationship between <span class="math inline">\(Wins\)</span> and at least one of the predictors (<span class="math inline">\(Goals Against\)</span> and <span class="math inline">\(Saves\)</span>).</p></li>
+<li><p>Under the null hypothesis, we assumed no linear relation between (<span class="math inline">\(Goals Against\)</span> and <span class="math inline">\(Saves\)</span>) and <span class="math inline">\(Wins\)</span> is a better predictor than (<span class="math inline">\(Goals Against\)</span>, <span class="math inline">\(Saves\)</span>, <span class="math inline">\(Shots Against\)</span>, <span class="math inline">\(Minutes\)</span>, <span class="math inline">\(Shutouts\)</span>). <br /> <strong>(b)</strong> Use an <span class="math inline">\(F\)</span>-test to compare Model 3 to your preferred model from part <strong>(a)</strong>. Report the following:</p></li>
+<li><p>The null hypothesis</p></li>
+<li><p>The value of the test statistic</p></li>
+<li><p>The p-value of the test</p></li>
+<li><p>A statistical decision at <span class="math inline">\(\alpha = 0.05\)</span></p></li>
+<li><p>The model you prefer</p></li>
 </ul>
-<pre class="r"><code>anova_2_3 = anova(model_2, model_3)
-anova_2_3</code></pre>
-<pre><code>## Analysis of Variance Table
-## 
-## Model 1: W ~ GA + SV + SA + MIN + SO
-## Model 2: W ~ GA + SV + SA + SV_PCT + GAA + SO + MIN + PIM
-##   Res.Df   RSS Df Sum of Sq     F   Pr(&gt;F)   
-## 1    456 72899                               
-## 2    453 70994  3    1905.1 4.052 0.007353 **
-## ---
-## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
-<p><strong>(c)</strong> Use a <span class="math inline">\(t\)</span>-test to test <span class="math inline">\(H_0: \beta_{\texttt{SV}} = 0 \ \text{vs} \ H_1: \beta_{\texttt{SV}} \neq 0\)</span> for the model you preferred in part <strong>(b)</strong>. Report the following:</p>
+<pre class="r"><code>anova_2_3 = anova(model_2, model_3)</code></pre>
 <ul>
-<li>The value of the test statistic</li>
-<li>The p-value of the test</li>
-<li>A statistical decision at <span class="math inline">\(\alpha = 0.05\)</span></li>
+<li><p>For this problem we will use Model 2 as the null hypothesis as it is a subset of Model 2 thus: <br /></p>
+<ul>
+<li>Under <span class="math inline">\(H_0\)</span>, <span class="math inline">\(\beta_{Goals.Against,Saves,Shots Against,Minutes,Shutouts} = 0\)</span>. <br /></li>
+<li>Under <span class="math inline">\(H_1\)</span>, <span class="math inline">\(\beta_{Goals.Against,Saves,Shots Against,Minutes,Shutouts} \neq 0\)</span>. <br /></li>
+</ul></li>
+<li><p>The value of test statistics is <span class="math inline">\(4.0519676\)</span>.</p></li>
+<li><p>The p-value of the test is <span class="math inline">\(0.0073529\)</span>.</p></li>
+<li><p>Using <span class="math inline">\(\alpha = 0.01\)</span> value compared to p-value of <span class="math inline">\(0.0073529\)</span>, we would reject the null hypothesis thus stating there is a significant linear relationship between <span class="math inline">\(Wins\)</span> and at least one of the predictors (<span class="math inline">\(Goals.Against\)</span>, <span class="math inline">\(Saves\)</span>, <span class="math inline">\(Shots Against\)</span>, <span class="math inline">\(Minutes\)</span>, <span class="math inline">\(Shutouts\)</span>).</p></li>
+<li><p>Under the null hypothesis, we assumed no linear relation between (<span class="math inline">\(Goals.Against\)</span>, <span class="math inline">\(Saves\)</span>, <span class="math inline">\(Shots Against\)</span>, <span class="math inline">\(Minutes\)</span>, <span class="math inline">\(Shutouts\)</span>) and <span class="math inline">\(Wins\)</span> is a better predictor than using all of the predictors, but due to the higher number of predictors being used we would prefer to use Model 2. <br /> <strong>(c)</strong> Use a <span class="math inline">\(t\)</span>-test to test <span class="math inline">\(H_0: \beta_{\texttt{SV}} = 0 \ \text{vs} \ H_1: \beta_{\texttt{SV}} \neq 0\)</span> for the model you preferred in part <strong>(b)</strong>. Report the following:</p></li>
+<li><p>The value of the test statistic</p></li>
+<li><p>The p-value of the test</p></li>
+<li><p>A statistical decision at <span class="math inline">\(\alpha = 0.05\)</span></p></li>
 </ul>
 <pre class="r"><code>test_stat_goal = summary(model_2)$coef[3,3]
 p_value_goal = summary(model_2)$coef[3,4]</code></pre>
-<p>TODO: PUT VALUES IN HERE ***</p>
+<ul>
+<li>The value of test statistics is <span class="math inline">\(-5.0353733\)</span>.</li>
+<li>The p-value of the test is <span class="math inline">\(6.8807404\times 10^{-7}\)</span>.</li>
+<li>Thus we will reject the null hypothesis that <span class="math inline">\(Saves\)</span> does not have an impact upon wins when compared with the rest of the predictors. <br /> ***</li>
+</ul>
 </div>
 <div id="exercise-3-regression-without-lm" class="section level2">
 <h2>Exercise 3 (Regression without <code>lm</code>)</h2>
@@ -571,38 +567,46 @@ Ozone = Ozone[complete.cases(Ozone), ]</code></pre>
 <pre class="r"><code>n = nrow(Ozone)
 X = cbind(rep(1,n), Ozone$wind, Ozone$humidity, Ozone$temp)
 y = Ozone$ozone
-
+                           
 beta_hat_no_lm = as.vector(solve(t(X) %*% X) %*% t(X) %*% y)
 sum(beta_hat_no_lm^2)</code></pre>
 <pre><code>## [1] 268.5564</code></pre>
-<p>TODO: DOUBLE CHECK THIS VALUE <br /> <strong>(b)</strong> Obtain the estimated regression coefficients <strong>with</strong> the use of <code>lm()</code>. Store the results in a vector <code>beta_hat_lm</code>. To ensure this is a vector, you may need to use <code>as.vector()</code>. Return this vector as well as the results of <code>sum(beta_hat_lm ^ 2)</code>.</p>
+<ul>
+<li>Thus <code>beta_hat_no_lm</code> = <span class="math inline">\(-16.3817854, -0.1859444, 0.0834001, 0.3898429\)</span></li>
+<li>Thus <code>sum(beta_hat_no_lm ^ 2)</code> = <span class="math inline">\(268.556401\)</span> <br /> <br /> <strong>(b)</strong> Obtain the estimated regression coefficients <strong>with</strong> the use of <code>lm()</code>. Store the results in a vector <code>beta_hat_lm</code>. To ensure this is a vector, you may need to use <code>as.vector()</code>. Return this vector as well as the results of <code>sum(beta_hat_lm ^ 2)</code>.</li>
+</ul>
 <pre class="r"><code>ozone_model = lm(ozone ~ wind + humidity + temp, data = Ozone)
 
 beta_hat_lm = as.vector(coef(ozone_model))
 sum(beta_hat_lm^2)</code></pre>
 <pre><code>## [1] 268.5564</code></pre>
-<p>TODO: DOUBLE CHECK THIS VALUE <br /> <strong>(c)</strong> Use the <code>all.equal()</code> function to verify that the results are the same. You may need to remove the names of one of the vectors. The <code>as.vector()</code> function will do this as a side effect, or you can directly use <code>unname()</code>.</p>
-<pre class="r"><code>all.equal(beta_hat_no_lm, beta_hat_lm)</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<p><strong>(d)</strong> Calculate <span class="math inline">\(s_e\)</span> without the use of <code>lm()</code>. That is, continue with your results from <strong>(a)</strong> and perform additional matrix operations to obtain the result. Output this result. Also, verify that this result is the same as the result obtained from <code>lm()</code>.</p>
+<ul>
+<li>Thus <code>beta_hat_lm</code> = <span class="math inline">\(-16.3817854, -0.1859444, 0.0834001, 0.3898429\)</span></li>
+<li>Thus <code>sum(beta_hat_lm ^ 2)</code> = <span class="math inline">\(268.556401\)</span> <br /> <br /> <strong>(c)</strong> Use the <code>all.equal()</code> function to verify that the results are the same. You may need to remove the names of one of the vectors. The <code>as.vector()</code> function will do this as a side effect, or you can directly use <code>unname()</code>.</li>
+</ul>
+<pre class="r"><code>equal_beta_hat = all.equal(beta_hat_no_lm, beta_hat_lm)</code></pre>
+<ul>
+<li>Thus we can see they are equal: <span class="math inline">\(TRUE\)</span> <br /> <br /> <strong>(d)</strong> Calculate <span class="math inline">\(s_e\)</span> without the use of <code>lm()</code>. That is, continue with your results from <strong>(a)</strong> and perform additional matrix operations to obtain the result. Output this result. Also, verify that this result is the same as the result obtained from <code>lm()</code>.</li>
+</ul>
 <pre class="r"><code>y_hat &lt;- X %*% solve(t(X) %*% X) %*% t(X) %*% y
 e = y - y_hat
 p = ncol(Ozone)
 
 s_e_no_lm = as.vector(sqrt(t(e) %*% e / (n - p)))
 s_e_lm = as.vector(summary(ozone_model)$sigma)
-
-all.equal(s_e_no_lm, s_e_lm)</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<p><strong>(e)</strong> Calculate <span class="math inline">\(R^2\)</span> without the use of <code>lm()</code>. That is, continue with your results from <strong>(a)</strong> and <strong>(d)</strong>, and perform additional operations to obtain the result. Output this result. Also, verify that this result is the same as the result obtained from <code>lm()</code>.</p>
+equal_s_e = all.equal(s_e_no_lm, s_e_lm)</code></pre>
+<ul>
+<li>Thus we can see they are equal: <span class="math inline">\(TRUE\)</span> <br /> <br /> <strong>(e)</strong> Calculate <span class="math inline">\(R^2\)</span> without the use of <code>lm()</code>. That is, continue with your results from <strong>(a)</strong> and <strong>(d)</strong>, and perform additional operations to obtain the result. Output this result. Also, verify that this result is the same as the result obtained from <code>lm()</code>.</li>
+</ul>
 <pre class="r"><code>SSReg = sum((y_hat - mean(y))^2)
 SSTotal = sum((y - mean(y))^2)
 
 r_square_no_lm = as.vector(SSReg / SSTotal)
 r_square_lm = summary(ozone_model)$r.squared
-all.equal(r_square_no_lm, r_square_lm)</code></pre>
-<pre><code>## [1] TRUE</code></pre>
-<hr />
+equal_r_squared = all.equal(r_square_no_lm, r_square_lm)</code></pre>
+<ul>
+<li>Thus we can see they are equal: <span class="math inline">\(TRUE\)</span> <br /> <br /> ***</li>
+</ul>
 </div>
 <div id="exercise-4-regression-for-prediction" class="section level2">
 <h2>Exercise 4 (Regression for Prediction)</h2>
@@ -652,7 +656,55 @@ test_model_disp = sqrt(sum((auto_tst$ozone - predict(model_disp, newdata=auto_ts
 test_model_1 = sqrt(sum((auto_tst$ozone - predict(model_1, newdata=auto_tst))^2) / length(auto_tst$ozone))
 test_model_2 = sqrt(sum((auto_tst$ozone - predict(model_2, newdata=auto_tst))^2) / length(auto_tst$ozone))
 test_model_3 = sqrt(sum((auto_tst$ozone - predict(model_3, newdata=auto_tst))^2) / length(auto_tst$ozone))</code></pre>
-<p>TODO: CREATE TABLE ***</p>
+<pre class="r"><code>library(knitr)
+RMSE_table = data.frame(
+  Model = c(&quot;Full&quot;,&quot;Tax&quot;,&quot;Model_1&quot;,&quot;Model_2&quot;,&quot;Model_3&quot;), 
+            train_RMSE = c(train_model_all, train_model_disp, train_model_1, train_model_2, train_model_3 ),
+            test_RMSE = c(test_model_all, test_model_disp, test_model_1, test_model_2, test_model_3))
+  
+kable(RMSE_table, caption = &quot;Automobile Models&quot;)</code></pre>
+<table>
+<caption>Automobile Models</caption>
+<thead>
+<tr class="header">
+<th align="left">Model</th>
+<th align="right">train_RMSE</th>
+<th align="right">test_RMSE</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Full</td>
+<td align="right">3.327437</td>
+<td align="right">NaN</td>
+</tr>
+<tr class="even">
+<td align="left">Tax</td>
+<td align="right">4.675831</td>
+<td align="right">NaN</td>
+</tr>
+<tr class="odd">
+<td align="left">Model_1</td>
+<td align="right">3.407040</td>
+<td align="right">NaN</td>
+</tr>
+<tr class="even">
+<td align="left">Model_2</td>
+<td align="right">4.297137</td>
+<td align="right">NaN</td>
+</tr>
+<tr class="odd">
+<td align="left">Model_3</td>
+<td align="right">4.384417</td>
+<td align="right">NaN</td>
+</tr>
+<tr class="even">
+<td align="left">***</td>
+<td align="right"></td>
+<td align="right"></td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="exercise-5-simulating-multiple-regression" class="section level2">
 <h2>Exercise 5 (Simulating Multiple Regression)</h2>

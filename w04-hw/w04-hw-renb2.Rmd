@@ -101,41 +101,40 @@ The predicted $Calories$ value is $`r pred`$.
 sd_y = sd(nutrition_data$Calories)
 s_e = summary(nutrition_model)$sigma
 ```
-The standard deviation is $`r sd_y`$ and $s_e$ is $`r s_e`$
-TODO: INTERPRET DATA
+The standard deviation is $`r sd_y`$ and $s_e$ is $`r s_e`$. This means that the standard deviation of the actual data is $`r sd_y`$ while the model we used to predict $Calories$ was $`r s_e`$.
 <br />
 **(e)** Report the value of $R^2$ for the model. Interpret its meaning in the context of the problem.
 ```{r}
 r_s = summary(nutrition_model)$r.squared
 ```
-The $R^2$ value is $`r r_s`$
-TODO: INTERPRET VALUES
+The $R^2$ value is $`r r_s`$. <br />
+This means that we have $`r r_s`$ proportion of variability in the data for $Calories$ as predicted by $Fat$, $Sugar$, and $Sodium$.
 <br />
 **(f)** Calculate a 95% confidence interval for $\beta_2$. Give an interpretation of the interval in the context of the problem.
 ```{r}
-confint(nutrition_model, level = 0.95)[3,]
+conf_beta_2 = confint(nutrition_model, level = 0.95)[3,]
 ```
-TODO: INTERPRET VALUES
+This shows that the value we predicted $(`r conf_beta_2[1]`, `r conf_beta_2[2]`)$ as using was actually failed to be rejected as it resides inside of this range so we would reject the null hypothesis.
 <br />
 **(g)** Calculate a 99% confidence interval for $\beta_0$. Give an interpretation of the interval in the context of the problem.
 ```{r}
-confint(nutrition_model, level = 0.99)[1,]
+conf_beta_0 = confint(nutrition_model, level = 0.99)[1,]
 ```
-TODO: INTERPRET VALUES
+This shows that the value we predicted $(`r conf_beta_0[1]`, `r conf_beta_0[2]`)$ as using was actually failed to be rejected as it resides inside of this range so we would reject the null hypothesis.
 <br />
 **(h)** Use a 90% confidence interval to estimate the mean Calorie content of a food with 24g of fat, 0g of sugar, and 350mg of sodium, which is true of a large order of McDonald's french fries. Interpret the interval in context.
 ```{r}
 new_fries = data.frame(Fat = 24, Sugar = 0, Sodium = 350)
 predict_fries = predict(nutrition_model, newdata = new_fries, interval = "confidence", level = 0.90)
 ```
-TODO: INTERPRET VALUES
+Thus we created a range of $(`r predict_fries[1, 1]`, `r predict_fries[1, 2]`)$ which means that the $Calorie$ value we produced within $90%$ should reside in that range for a McDonald's french frie.
 <br />
 **(i)** Use a 90% prediction interval to predict the Calorie content of a Taco Bell Crunchwrap Supreme that has 21g of fat, 6g of sugar, and 1200mg of sodium. Interpret the interval in context.
 ```{r}
 new_crunchwrap = data.frame(Fat = 21, Sugar = 6, Sodium = 1200)
 predict_crunchwrap = predict(nutrition_model, newdata = new_crunchwrap, interval = "prediction", level = 0.90)
 ```
-TODO: INTERPRET VALUES
+Thus we created a range of $(`r predict_crunchwrap[1, 1]`, `r predict_crunchwrap[1, 2]`)$ which means that the $Calorie$ value we produced based upon our McDonald information would predict this range for the Calories of a Taco Bell Crunchwrap.
 <br />
 ***
 
@@ -175,9 +174,18 @@ model_3 = lm(W ~ GA + SV + SA + SV_PCT + GAA + SO + MIN + PIM, data = goalies_da
 - The model you prefer
 ```{r}
 anova_1_2 = anova(model_1, model_2)
-anova_1_2
 ```
-
++ For this problem we will use Model 1 as the null hypothesis as it is a subset of Model 2 thus:
+  <br/>
+    - Under $H_0$, $\beta_{Goals.Against,Saves} = 0$.
+   <br/>
+    - Under $H_1$, $\beta_{Goals.Against,Saves} \neq 0$.
+    <br />
++ The value of test statistics  is $`r anova_1_2[2,5]`$. 
++ The p-value of the test  is $`r anova_1_2[2,6]`$.
++ Using $\alpha = 0.01$ value compared to p-value of $`r anova_1_2[2,6]`$, we would reject the null hypothesis thus stating there is a significant linear relationship between $Wins$ and at least one of the predictors ($Goals Against$ and $Saves$).
++ Under the null hypothesis, we assumed no linear relation between ($Goals Against$ and $Saves$) and $Wins$ is a better predictor than ($Goals Against$, $Saves$, $Shots Against$, $Minutes$, $Shutouts$).
+<br />
 **(b)** Use an $F$-test to compare Model 3 to your preferred model from part **(a)**. Report the following:
 
 - The null hypothesis
@@ -187,8 +195,18 @@ anova_1_2
 - The model you prefer
 ```{r}
 anova_2_3 = anova(model_2, model_3)
-anova_2_3
 ```
++ For this problem we will use Model 2 as the null hypothesis as it is a subset of Model 2 thus:
+  <br/>
+    - Under $H_0$, $\beta_{Goals.Against,Saves,Shots Against,Minutes,Shutouts} = 0$.
+   <br/>
+    - Under $H_1$, $\beta_{Goals.Against,Saves,Shots Against,Minutes,Shutouts} \neq 0$.
+    <br />
++ The value of test statistics  is $`r anova_2_3[2,5]`$. 
++ The p-value of the test  is $`r anova_2_3[2,6]`$.
++ Using $\alpha = 0.01$ value compared to p-value of $`r anova_2_3[2,6]`$, we would reject the null hypothesis thus stating there is a significant linear relationship between $Wins$ and at least one of the predictors ($Goals.Against$, $Saves$, $Shots Against$, $Minutes$, $Shutouts$).
++ Under the null hypothesis, we assumed no linear relation between ($Goals.Against$, $Saves$, $Shots Against$, $Minutes$, $Shutouts$) and $Wins$ is a better predictor than using all of the predictors, but due to the higher number of predictors being used we would prefer to use Model 2.
+<br />
 **(c)** Use a $t$-test to test $H_0: \beta_{\texttt{SV}} = 0 \ \text{vs} \ H_1: \beta_{\texttt{SV}} \neq 0$ for the model you preferred in part **(b)**. Report the following:
 
 - The value of the test statistic
@@ -198,7 +216,10 @@ anova_2_3
 test_stat_goal = summary(model_2)$coef[3,3]
 p_value_goal = summary(model_2)$coef[3,4]
 ```
-TODO: PUT VALUES IN HERE
++ The value of test statistics  is $`r test_stat_goal`$. 
++ The p-value of the test  is $`r p_value_goal`$.
++ Thus we will reject the null hypothesis that $Saves$ does not have an impact upon wins when compared with the rest of the predictors.
+<br />
 ***
 
 ## Exercise 3 (Regression without `lm`)
@@ -217,11 +238,13 @@ Ozone = Ozone[complete.cases(Ozone), ]
 n = nrow(Ozone)
 X = cbind(rep(1,n), Ozone$wind, Ozone$humidity, Ozone$temp)
 y = Ozone$ozone
-
+                           
 beta_hat_no_lm = as.vector(solve(t(X) %*% X) %*% t(X) %*% y)
 sum(beta_hat_no_lm^2)
 ```
-TODO: DOUBLE CHECK THIS VALUE
++ Thus `beta_hat_no_lm` = $`r beta_hat_no_lm`$
++ Thus `sum(beta_hat_no_lm ^ 2)` = $`r sum(beta_hat_no_lm ^ 2)`$
+<br />
 <br />
 **(b)** Obtain the estimated regression coefficients **with** the use of `lm()`. Store the results in a vector `beta_hat_lm`. To ensure this is a vector, you may need to use `as.vector()`. Return this vector as well as the results of `sum(beta_hat_lm ^ 2)`.
 ```{r}
@@ -230,13 +253,17 @@ ozone_model = lm(ozone ~ wind + humidity + temp, data = Ozone)
 beta_hat_lm = as.vector(coef(ozone_model))
 sum(beta_hat_lm^2)
 ```
-TODO: DOUBLE CHECK THIS VALUE
++ Thus `beta_hat_lm` = $`r beta_hat_lm`$
++ Thus `sum(beta_hat_lm ^ 2)` = $`r sum(beta_hat_lm ^ 2)`$
+<br />
 <br />
 **(c)** Use the `all.equal()` function to verify that the results are the same. You may need to remove the names of one of the vectors. The `as.vector()` function will do this as a side effect, or you can directly use `unname()`.
 ```{r}
-all.equal(beta_hat_no_lm, beta_hat_lm)
+equal_beta_hat = all.equal(beta_hat_no_lm, beta_hat_lm)
 ```
-
++ Thus we can see they are equal: $`r equal_beta_hat`$
+<br />
+<br />
 **(d)** Calculate $s_e$ without the use of `lm()`. That is, continue with your results from **(a)** and perform additional matrix operations to obtain the result. Output this result. Also, verify that this result is the same as the result obtained from `lm()`.
 ```{r}
 y_hat <- X %*% solve(t(X) %*% X) %*% t(X) %*% y
@@ -245,10 +272,11 @@ p = ncol(Ozone)
 
 s_e_no_lm = as.vector(sqrt(t(e) %*% e / (n - p)))
 s_e_lm = as.vector(summary(ozone_model)$sigma)
-
-all.equal(s_e_no_lm, s_e_lm)
+equal_s_e = all.equal(s_e_no_lm, s_e_lm)
 ```
-
++ Thus we can see they are equal: $`r equal_s_e`$
+<br />
+<br />
 **(e)** Calculate $R^2$ without the use of `lm()`. That is, continue with your results from **(a)** and **(d)**, and perform additional operations to obtain the result. Output this result. Also, verify that this result is the same as the result obtained from `lm()`.
 ```{r}
 SSReg = sum((y_hat - mean(y))^2)
@@ -256,9 +284,11 @@ SSTotal = sum((y - mean(y))^2)
 
 r_square_no_lm = as.vector(SSReg / SSTotal)
 r_square_lm = summary(ozone_model)$r.squared
-all.equal(r_square_no_lm, r_square_lm)
+equal_r_squared = all.equal(r_square_no_lm, r_square_lm)
 ```
-
++ Thus we can see they are equal: $`r equal_r_squared`$
+<br />
+<br />
 ***
 
 ## Exercise 4 (Regression for Prediction)
@@ -326,8 +356,17 @@ test_model_1 = sqrt(sum((auto_tst$ozone - predict(model_1, newdata=auto_tst))^2)
 test_model_2 = sqrt(sum((auto_tst$ozone - predict(model_2, newdata=auto_tst))^2) / length(auto_tst$ozone))
 test_model_3 = sqrt(sum((auto_tst$ozone - predict(model_3, newdata=auto_tst))^2) / length(auto_tst$ozone))
 ```
-TODO: CREATE TABLE
+```{r}
+library(knitr)
+RMSE_table = data.frame(
+  Model = c("Full","Tax","Model_1","Model_2","Model_3"), 
+            train_RMSE = c(train_model_all, train_model_disp, train_model_1, train_model_2, train_model_3 ),
+            test_RMSE = c(test_model_all, test_model_disp, test_model_1, test_model_2, test_model_3))
+  
+kable(RMSE_table, caption = "Automobile Models")
+```
 ***
+
 
 ## Exercise 5 (Simulating Multiple Regression)
 
