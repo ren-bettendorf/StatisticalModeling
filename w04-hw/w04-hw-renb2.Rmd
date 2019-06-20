@@ -350,21 +350,23 @@ train_model_2 = sqrt(sum(residuals(model_2)^2) / length(residuals(model_2)))
 train_model_3 = sqrt(sum(residuals(model_3)^2) / length(residuals(model_3)))
 ```
 ```{r}
-test_model_all = sqrt(sum((auto_tst$ozone - predict(model_all, newdata=auto_tst))^2) / length(auto_tst$ozone))
-test_model_disp = sqrt(sum((auto_tst$ozone - predict(model_disp, newdata=auto_tst))^2) / length(auto_tst$ozone))
-test_model_1 = sqrt(sum((auto_tst$ozone - predict(model_1, newdata=auto_tst))^2) / length(auto_tst$ozone))
-test_model_2 = sqrt(sum((auto_tst$ozone - predict(model_2, newdata=auto_tst))^2) / length(auto_tst$ozone))
-test_model_3 = sqrt(sum((auto_tst$ozone - predict(model_3, newdata=auto_tst))^2) / length(auto_tst$ozone))
+test_model_all = sqrt(sum((auto_tst$mpg - predict(model_all, newdata=auto_tst))^2) / length(auto_tst$mpg))
+test_model_disp = sqrt(sum((auto_tst$mpg - predict(model_disp, newdata=auto_tst))^2) / length(auto_tst$mpg))
+test_model_1 = sqrt(sum((auto_tst$mpg - predict(model_1, newdata=auto_tst))^2) / length(auto_tst$mpg))
+test_model_2 = sqrt(sum((auto_tst$mpg - predict(model_2, newdata=auto_tst))^2) / length(auto_tst$mpg))
+test_model_3 = sqrt(sum((auto_tst$mpg - predict(model_3, newdata=auto_tst))^2) / length(auto_tst$mpg))
 ```
 ```{r}
 library(knitr)
-RMSE_table = data.frame(
-  Model = c("Full","Tax","Model_1","Model_2","Model_3"), 
-            train_RMSE = c(train_model_all, train_model_disp, train_model_1, train_model_2, train_model_3 ),
-            test_RMSE = c(test_model_all, test_model_disp, test_model_1, test_model_2, test_model_3))
+df = data.frame(Model = c("All","Displacement","Model 1","Model 2","Model 3"), 
+                train = c(train_model_all, train_model_disp, train_model_1, train_model_2, train_model_3),
+                test = c(test_model_all, test_model_disp, test_model_1, test_model_2, test_model_3))
   
-kable(RMSE_table, caption = "Automobile Models")
+kable(df)
 ```
+
+- After looking at the table we are able to choose model 1 which has the smallest training and testing RMSE.
+
 ***
 
 
@@ -430,7 +432,10 @@ sim_data = data.frame(y, x1, x2, x3, x4, x5)
 sum_diag = sum(diag(C))
 sim_data_5 = sim_data[5,]
 ```
-
++ The sum of the diagonal: $`r sum_diag`$.
++ The 5th row of the `sim_data`: $`r sim_data_5`$
+<br />
+<br />
 **(b)** Create three vectors of length `2500` that will store results from the simulation in part **(c)**. Call them `beta_hat_1`, `beta_3_pval`, and `beta_5_pval`.
 ```{r}
 n = 2500
@@ -456,28 +461,25 @@ for(i in 1:n) {
 ```
 
 **(d)** Based on the known values of $X$, what is the true distribution of $\hat{\beta}_1$?
-```{r}
-beta_1
-var(beta_hat_1)
-```
+- The true distribution of $\hat{\beta}_1$: $mean$ = `r beta_1` and $variance$ = `r var(beta_hat_1)`.
+<br />
 
 **(e)** Calculate the mean and variance of `beta_hat_1`. Are they close to what we would expect? Plot a histogram of `beta_hat_1`. Add a curve for the true distribution of $\hat{\beta}_1$. Does the curve seem to match the histogram?
 ```{r}
 mean_beta_hat_1 = mean(beta_hat_1)
 var_beta_hat_1 = var(beta_hat_1)
-hist(beta_hat_1, prob = TRUE, breaks =20, xlab = expression(hat(beta)[1]),   main = "Histogram of beta_hat_1", border = "dodgerblue")
+hist(beta_hat_1, prob = TRUE, breaks = 25, xlab = expression(hat(beta)[1]),   main = "Histogram beta_hat_1", border = "dodgerblue")
 curve(dnorm(x, mean = beta_1, sd = sqrt(sigma^2 * C[2, 2])), col = "darkorange", add = TRUE, lwd = 3)
 ```
 
 **(f)** What proportion of the p-values stored in `beta_3_pval` is less than 0.10? Is this what you would expect?
 ```{r}
-proportion_beta_3 = sum(beta_3_pval < 0.1)
-proportion_beta_3 / length(beta_3_pval)
+prop_beta_3 = sum(beta_3_pval < 0.1) / length(beta_3_pval)
 ```
-
+- $`r prop_beta_3`$ proportion of `beta_3_pval` values are less than $0.1$ and with a mean of `r mean(beta_3_pval)` this is to be expected.
+<br />
 **(g)** What proportion of the p-values stored in `beta_5_pval` is less than 0.01? Is this what you would expect?
 ```{r}
-proportion_beta_5 = sum(beta_5_pval < 0.1)
-proportion_beta_5 / length(beta_5_pval)
+prop_beta_5 = sum(beta_5_pval < 0.01) / length(beta_5_pval)
 ```
-
+- $`r prop_beta_5`$ proportion of `beta_5_pval` values are less than $0.1$ and with a mean of $`r mean(beta_5_pval)`$ this is to be expected.

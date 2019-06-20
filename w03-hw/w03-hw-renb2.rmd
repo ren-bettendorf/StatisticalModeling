@@ -260,8 +260,7 @@ kable(df)
 ```{r}
 hist(beta_0_hats, prob = TRUE, breaks = 25, 
      xlab = expression(hat(beta)[0]), main = "", border = "dodgerblue")
-curve(dnorm(x, mean = beta_0, sd = sqrt(var_beta_0_hat)),
-      col = "darkorange", add = TRUE, lwd = 3)
+curve(dnorm(x, mean = beta_0, sd = sqrt(var_beta_0_hat)), col = "darkorange", add = TRUE, lwd = 3)
 ```
 
 ```{r}
