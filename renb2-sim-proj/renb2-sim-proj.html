@@ -381,7 +381,132 @@ $(document).ready(function () {
 </div>
 
 
+<div id="simulation-study-1-significance-of-regression" class="section level2">
+<h2>Simulation Study 1: Significance of Regression</h2>
+<ul>
+<li><strong>Introduction</strong></li>
+<li><strong>Methods</strong></li>
+</ul>
+<pre class="r"><code>birthday = 19890927
+set.seed(birthday)
+library(readr)
+study_1_data = read_csv(&quot;study_1.csv&quot;)
+n = 25
+p = 3 + 1
+x0 = rep(1, n)
+x1 = study_1_data$x1
+x2 = study_1_data$x2
+x3 = study_1_data$x3
 
+# Significant Model beta values
+sig_beta_0 = 3
+sig_beta_1 = 1
+sig_beta_2 = 1
+sig_beta_3 = 1
+# Non-Significant Model beta values
+non_beta_0 = 3
+non_beta_1 = 0
+non_beta_2 = 0
+non_beta_3 = 0
+
+sigma = c(1, 5, 10)
+simulations = 2500</code></pre>
+<pre class="r"><code>sim1_data = data.frame( sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
+                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
+for (iter in 1:simulations) {
+  eps = rnorm(n, mean = 0, sd = sigma[1])
+  study_1_data$y = sig_beta_0 + sig_beta_1 * x1 + sig_beta_2 * x2 + sig_beta_3 * x3 + eps
+  sig_model = lm(y ~ ., data = study_1_data)
+  sim1_data$sig_f[iter] = summary(sig_model)$fstatistic[[1]]
+  sim1_data$sig_p[iter] = pf(summary(sig_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
+  sim1_data$sig_r[iter] = summary(sig_model)$r.squared
+  
+  study_1_data$y = non_beta_0 + non_beta_1 * x1 + non_beta_2 * x2 + non_beta_3 * x3 + eps
+  non_model = lm(y ~ ., data = study_1_data)
+  sim1_data$non_f[iter] = summary(non_model)$fstatistic[[1]]
+  sim1_data$non_p[iter] = pf(summary(non_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
+  sim1_data$non_r[iter] = summary(non_model)$r.squared
+}
+
+sim2_data = data.frame( sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
+                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
+for (iter in 1:simulations) {
+  eps = rnorm(n, mean = 0, sd = sigma[2])
+  study_1_data$y = sig_beta_0 + sig_beta_1 * x1 + sig_beta_2 * x2 + sig_beta_3 * x3 + eps
+  sig_model = lm(y ~ ., data = study_1_data)
+  sim2_data$sig_f[iter] = summary(sig_model)$fstatistic[[1]]
+  sim2_data$sig_p[iter] = pf(summary(sig_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
+  sim2_data$sig_r[iter] = summary(sig_model)$r.squared
+  
+  study_1_data$y = non_beta_0 + non_beta_1 * x1 + non_beta_2 * x2 + non_beta_3 * x3 + eps
+  non_model = lm(y ~ ., data = study_1_data)
+  sim2_data$non_f[iter] = summary(non_model)$fstatistic[[1]]
+  sim2_data$non_p[iter] = pf(summary(non_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
+  sim2_data$non_r[iter] = summary(non_model)$r.squared
+}
+
+sim3_data = data.frame( sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
+                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
+for (iter in 1:simulations) {
+  eps = rnorm(n, mean = 0, sd = sigma[3])
+  study_1_data$y = sig_beta_0 + sig_beta_1 * x1 + sig_beta_2 * x2 + sig_beta_3 * x3 + eps
+  sig_model = lm(y ~ ., data = study_1_data)
+  sim3_data$sig_f[iter] = summary(sig_model)$fstatistic[[1]]
+  sim3_data$sig_p[iter] = pf(summary(sig_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
+  sim3_data$sig_r[iter] = summary(sig_model)$r.squared
+  
+  study_1_data$y = non_beta_0 + non_beta_1 * x1 + non_beta_2 * x2 + non_beta_3 * x3 + eps
+  non_model = lm(y ~ ., data = study_1_data)
+  sim3_data$non_f[iter] = summary(non_model)$fstatistic[[1]]
+  sim3_data$non_p[iter] = pf(summary(non_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
+  sim3_data$non_r[iter] = summary(non_model)$r.squared
+}</code></pre>
+<ul>
+<li><strong>Results</strong></li>
+<li><strong>Discussion</strong></li>
+</ul>
+</div>
+<div id="simulation-study-2-using-rmse-for-selection" class="section level2">
+<h2>Simulation Study 2: Using RMSE for Selection?</h2>
+<ul>
+<li><strong>Introduction</strong></li>
+<li><strong>Methods</strong></li>
+</ul>
+<pre class="r"><code>birthday = 19890927
+set.seed(birthday)
+library(readr)
+study_2_data = read_csv(&quot;study_2.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   y = col_double(),
+##   x1 = col_double(),
+##   x2 = col_double(),
+##   x3 = col_double(),
+##   x4 = col_double(),
+##   x5 = col_double(),
+##   x6 = col_double(),
+##   x7 = col_double(),
+##   x8 = col_double(),
+##   x9 = col_double()
+## )</code></pre>
+<ul>
+<li><strong>Results</strong></li>
+<li><strong>Discussion</strong></li>
+</ul>
+</div>
+<div id="simulation-study-3-power" class="section level2">
+<h2>Simulation Study 3: Power</h2>
+<ul>
+<li><strong>Introduction</strong></li>
+<li><strong>Methods</strong></li>
+</ul>
+<pre class="r"><code>birthday = 19890927
+set.seed(birthday)</code></pre>
+<ul>
+<li><strong>Results</strong></li>
+<li><strong>Discussion</strong></li>
+</ul>
+</div>
 
 
 
