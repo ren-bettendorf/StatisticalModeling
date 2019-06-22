@@ -687,6 +687,24 @@ for (sigma in sigmas) {
     }
   }
 }</code></pre>
+<pre class="r"><code>mean_sigmas = rep(0, length(sigmas))
+i = 1
+for (sigma in sigmas) {
+  mean_sigmas[i] = mean(power_data$power[power_data$sigma == sigma])
+  i = i + 1
+}</code></pre>
+<pre class="r"><code>mean_beta_1s = rep(0, length(beta_1_list))
+i = 1
+for (beta_1 in beta_1_list) {
+  mean_beta_1s[i] = mean(power_data$power[power_data$beta_1 == beta_1])
+  i = i + 1
+}</code></pre>
+<pre class="r"><code>mean_n = rep(0, length(samples))
+i = 1
+for (sample in samples) {
+  mean_n[i] = mean(power_data$power[power_data$n == sample])
+  i = i + 1
+}</code></pre>
 <ul>
 <li><strong>Results</strong></li>
 <li><strong>Discussion</strong></li>

@@ -10,7 +10,7 @@ output: html_document
 
 - **Introduction**
 - **Methods**
-```{r message=FALSE, warning=FALSE}
+```{r setup_model_1, message=FALSE, warning=FALSE}
 birthday = 19890927
 set.seed(birthday)
 library(readr)
@@ -37,7 +37,7 @@ sigma = c(1, 5, 10)
 simulations = 2500
 ```
 
-```{r}
+```{r simulate_model_1}
 sim1_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
 for (iter in 1:simulations) {
@@ -97,7 +97,7 @@ for (iter in 1:simulations) {
 
 - **Introduction**
 - **Methods**
-```{r message=FALSE, warning=FALSE}
+```{r setup_simulate_2, message=FALSE, warning=FALSE}
 birthday = 19890927
 set.seed(birthday)
 library(readr)
@@ -127,7 +127,7 @@ calculate_rmse  = function(actual, predicted) {
   return(sqrt(mean((actual - predicted)^2)))
 }
 ```
-```{r}
+```{r simulate_models_2}
 sim1_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
                              model_4 = rep(0, simulations), model_5 = rep(0, simulations), model_6 = rep(0, simulations),
                              model_7 = rep(0, simulations), model_8 = rep(0, simulations), model_9 = rep(0, simulations))
@@ -278,7 +278,7 @@ for (iter in 1:simulations) {
 
 - **Introduction**
 - **Methods**
-```{r}
+```{r setup_power_values}
 birthday = 19890927
 set.seed(birthday)
 beta_0 = 0
@@ -291,7 +291,7 @@ number_iterations = length(sigmas) * length(samples) * length(beta_1_list)
 power_data = data.frame(sigma = rep(0, number_iterations), n = rep(0, number_iterations),
                         beta_1 = rep(0, number_iterations), power = rep(0, number_iterations))
 ```
-```{r}
+```{r simulate_power}
 i = 1
 for (sigma in sigmas) {
   for (n in samples) {
@@ -317,11 +317,27 @@ for (sigma in sigmas) {
   }
 }
 ```
-```{r}
+```{r calculate_mean_sigma}
 mean_sigmas = rep(0, length(sigmas))
 i = 1
 for (sigma in sigmas) {
   mean_sigmas[i] = mean(power_data$power[power_data$sigma == sigma])
+  i = i + 1
+}
+```
+```{r calculate_mean_beta_1}
+mean_beta_1s = rep(0, length(beta_1_list))
+i = 1
+for (beta_1 in beta_1_list) {
+  mean_beta_1s[i] = mean(power_data$power[power_data$beta_1 == beta_1])
+  i = i + 1
+}
+```
+```{r calculate_mean_sample_size}
+mean_n = rep(0, length(samples))
+i = 1
+for (sample in samples) {
+  mean_n[i] = mean(power_data$power[power_data$n == sample])
   i = i + 1
 }
 ```
