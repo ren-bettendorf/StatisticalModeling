@@ -287,27 +287,45 @@ sigmas = c(1, 2, 4)
 samples = c(10, 20, 30)
 alpha = 0.05
 simulations = 1000
+number_iterations = length(sigmas) * length(samples) * length(beta_1_list)
+power_data = data.frame(sigma = rep(0, number_iterations), n = rep(0, number_iterations),
+                        beta_1 = rep(0, number_iterations), power = rep(0, number_iterations))
 ```
 ```{r}
+i = 1
 for (sigma in sigmas) {
   for (n in samples) {
     x_values = seq(0, 5, length = n)
     for (beta_1 in beta_1_list) {
       rejected = 0
-      for (i in 1:simulations) {
+      for (iter in 1:simulations) {
         eps = rnorm(n, 0, sigma)
         y = beta_0 + beta_1 * x_values + eps
         model = lm(y ~ x_values)
         beta_1_p = summary(model)$coefficients[2, 4]
-        if (p_value < alpha) {
+        if (beta_1_p < alpha) {
           rejected = rejected + 1
         }
       }
       power = rejected / simulations
+      power_data$sigma[i] = sigma
+      power_data$n[i] = n
+      power_data$beta_1[i] = beta_1
+      power_data$power[i] = power
+      i = i + 1
     }
   }
 }
 ```
+```{r}
+mean_sigmas = rep(0, length(sigmas))
+i = 1
+for (sigma in sigmas) {
+  mean_sigmas[i] = mean(power_data$power[power_data$sigma == sigma])
+  i = i + 1
+}
+```
+
 
 - **Results**
 - **Discussion**
