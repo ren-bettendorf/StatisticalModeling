@@ -8,9 +8,34 @@ output: html_document
 ## Simulation Study 1: Significance of Regression
 
 
-- **Introduction**
-- **Methods**
-```{r setup_model_1, message=FALSE, warning=FALSE}
+### **Introduction**
+<br />
+In this Simulation Study we are given two models to investigate the significance of regression which we will name "**Significant**" and "**Non-Significant**".
+<br />
+
+* **Significant Model**
+  -  $Y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \epsilon_i$
+  -  $\beta_0 = 3$
+  -  $\beta_1 = 1$
+  -  $\beta_2 = 1$
+  -  $\beta_3 = 1$
+  -  $\epsilon_i \sim N(0, \sigma^2)$
+<br />
+
+* **Non-Significant Model**
+  + $Y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \epsilon_i$
+  + $\beta_0 = 3$
+  + $\beta_1 = 0$
+  + $\beta_2 = 0$
+  + $\beta_3 = 0$
+  + $\epsilon_i \sim N(0, \sigma^2)$
+<br />
+
+What we mean by investigate the significance of regression is to investigate the given predictors $x_1, x_2, x_3$ and to determine if there is a linear relationship when considering these variables with $Y$. In order to show if this relationship exists though we will be doing $2,500$ simulations based upon data contained in `study_1.csv` with a sample size of $25$ with the following $\sigma \in (1, 5, 10)$ which leads to a total of $15,000$ simulations for our $Y$ variable. For comparison at the end we will consider the $F statistic$, $p-value$, and $R^2$ to determine which empirical distribution.
+<br />
+
+### **Methods**
+```{r setup_model_1, message=FALSE, warning=FALSE, cache=TRUE}
 birthday = 19890927
 set.seed(birthday)
 library(readr)
@@ -37,7 +62,7 @@ sigma = c(1, 5, 10)
 simulations = 2500
 ```
 
-```{r simulate_model_1}
+```{r simulate_model_1, cache=TRUE}
 sim1_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
 for (iter in 1:simulations) {
@@ -90,14 +115,43 @@ for (iter in 1:simulations) {
 }
 ```
 
-- **Results**
-- **Discussion**
+###  **Results**
+###  **Discussion**
 
 ## Simulation Study 2: Using RMSE for Selection?
 
-- **Introduction**
-- **Methods**
-```{r setup_simulate_2, message=FALSE, warning=FALSE}
+###  **Introduction**
+<br />
+In this Simulation Study we will be looking at RMSE, root mean sequared error, when considering multiple models and will use simulation to determine if our selected model is the actual **best** model. The model we have selected to model is
+
+* $Y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5} + \beta_6 x_{i6} + \epsilon_i$
+  +  $\beta_0 = 0$
+  +  $\beta_1 = 5$
+  +  $\beta_2 = -4$
+  +  $\beta_3 = 1.6$
+  +  $\beta_4 = -1.1$
+  +  $\beta_5 = 0.7$
+  +  $\beta_6 = 0.3$
+  +  $\epsilon_i \sim N(0, \sigma^2)$ where $\sigma \in (1, 2, 4)$
+<br />
+
+From this model we will fit the following models
+
+* $y \sim x1$
+* $y \sim x1 + x2$
+* $y \sim x1 + x2 + x3$
+* $y \sim x1 + x2 + x3 + x4$
+* $y \sim x1 + x2 + x3 + x4 + x5$
+* $y \sim x1 + x2 + x3 + x4 + x5 + x6$
+* $y \sim x1 + x2 + x3 + x4 + x5 + x6 + x7$
+* $y \sim x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8$
+* $y \sim x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9$
+<br />
+
+The data contained in `study_2.csv` consists of $500$ observations which we will split in half randomly each for a training and a testing dataset which we will run $1000$ times for each value of $\sigma$ which totals $3,000$ simulations and $27,000$ models trained.
+
+###  **Methods**
+```{r setup_simulate_2, message=FALSE, warning=FALSE, cache=TRUE}
 birthday = 19890927
 set.seed(birthday)
 library(readr)
@@ -127,7 +181,7 @@ calculate_rmse  = function(actual, predicted) {
   return(sqrt(mean((actual - predicted)^2)))
 }
 ```
-```{r simulate_models_2}
+```{r simulate_models_2, cache=TRUE}
 sim1_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
                              model_4 = rep(0, simulations), model_5 = rep(0, simulations), model_6 = rep(0, simulations),
                              model_7 = rep(0, simulations), model_8 = rep(0, simulations), model_9 = rep(0, simulations))
@@ -271,14 +325,33 @@ for (iter in 1:simulations) {
 }
 ```
 
-- **Results**
-- **Discussion**
+###  **Results**
+###  **Discussion**
 
 ## Simulation Study 3: Power
 
-- **Introduction**
-- **Methods**
-```{r setup_power_values}
+###  **Introduction**
+<br />
+In this Simulation Study we will be looking at **power** on a simple linear regression test of the following
+<br />
+<br />
+<center>
+$H_0: \beta_1 = 0\: vs\: H_1: \ne 0$
+</center>
+<br />
+
+We define **power** as the probability of reject the null hypothesis when the null is not true or can be written as $P[Reject \: H_0| H_1 \: True]$. In order to test this with simulation we will simulate
+
+\[Y_i = \beta_0 + \beta_1 x_{1i}+ \epsilon_i\]
+
+  -  $\beta_0 = 0$
+  -  $\beta_1 \in (-2, -1.9, ..., 1.9, 2)$
+  -  $\epsilon_i \sim N(0, \sigma^2)$ where $\sigma \in (1, 2, 4)$
+  
+For this we will also use a variable sample size of $n \in (10, 20, 30)$, but for our test we will hold $\alpha = 0.05$ for testing our $p-value$ we generate from simulating $1,000$ times. At the end we will look at how **power** changes depending on $beta_1$, $n$, and $\sigma$.
+
+###  **Methods**
+```{r setup_power_values, cache=TRUE}
 birthday = 19890927
 set.seed(birthday)
 beta_0 = 0
@@ -291,7 +364,7 @@ number_iterations = length(sigmas) * length(samples) * length(beta_1_list)
 power_data = data.frame(sigma = rep(0, number_iterations), n = rep(0, number_iterations),
                         beta_1 = rep(0, number_iterations), power = rep(0, number_iterations))
 ```
-```{r simulate_power}
+```{r simulate_power, cache=TRUE}
 i = 1
 for (sigma in sigmas) {
   for (n in samples) {
@@ -317,7 +390,7 @@ for (sigma in sigmas) {
   }
 }
 ```
-```{r calculate_mean_sigma}
+```{r calculate_mean_sigma, cache=TRUE}
 mean_sigmas = rep(0, length(sigmas))
 i = 1
 for (sigma in sigmas) {
@@ -325,7 +398,7 @@ for (sigma in sigmas) {
   i = i + 1
 }
 ```
-```{r calculate_mean_beta_1}
+```{r calculate_mean_beta_1, cache=TRUE}
 mean_beta_1s = rep(0, length(beta_1_list))
 i = 1
 for (beta_1 in beta_1_list) {
@@ -333,7 +406,7 @@ for (beta_1 in beta_1_list) {
   i = i + 1
 }
 ```
-```{r calculate_mean_sample_size}
+```{r calculate_mean_sample_size, cache=TRUE}
 mean_n = rep(0, length(samples))
 i = 1
 for (sample in samples) {
@@ -343,5 +416,5 @@ for (sample in samples) {
 ```
 
 
-- **Results**
-- **Discussion**
+###  **Results**
+###  **Discussion**

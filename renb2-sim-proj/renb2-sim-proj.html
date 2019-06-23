@@ -383,10 +383,33 @@ $(document).ready(function () {
 
 <div id="simulation-study-1-significance-of-regression" class="section level2">
 <h2>Simulation Study 1: Significance of Regression</h2>
+<div id="introduction" class="section level3">
+<h3><strong>Introduction</strong></h3>
+<p><br /> In this Simulation Study we are given two models to investigate the significance of regression which we will name “<strong>Significant</strong>” and “<strong>Non-Significant</strong>”. <br /></p>
 <ul>
-<li><strong>Introduction</strong></li>
-<li><strong>Methods</strong></li>
+<li><strong>Significant Model</strong>
+<ul>
+<li><span class="math inline">\(Y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \epsilon_i\)</span></li>
+<li><span class="math inline">\(\beta_0 = 3\)</span></li>
+<li><span class="math inline">\(\beta_1 = 1\)</span></li>
+<li><span class="math inline">\(\beta_2 = 1\)</span></li>
+<li><span class="math inline">\(\beta_3 = 1\)</span></li>
+<li><span class="math inline">\(\epsilon_i \sim N(0, \sigma^2)\)</span> <br /></li>
+</ul></li>
+<li><strong>Non-Significant Model</strong>
+<ul>
+<li><span class="math inline">\(Y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \epsilon_i\)</span></li>
+<li><span class="math inline">\(\beta_0 = 3\)</span></li>
+<li><span class="math inline">\(\beta_1 = 0\)</span></li>
+<li><span class="math inline">\(\beta_2 = 0\)</span></li>
+<li><span class="math inline">\(\beta_3 = 0\)</span></li>
+<li><span class="math inline">\(\epsilon_i \sim N(0, \sigma^2)\)</span> <br /></li>
+</ul></li>
 </ul>
+<p>What we mean by investigate the significance of regression is to investigate the given predictors <span class="math inline">\(x_1, x_2, x_3\)</span> and to determine if there is a linear relationship when considering these variables with <span class="math inline">\(Y\)</span>. In order to show if this relationship exists though we will be doing <span class="math inline">\(2,500\)</span> simulations based upon data contained in <code>study_1.csv</code> with a sample size of <span class="math inline">\(25\)</span> with the following <span class="math inline">\(\sigma \in (1, 5, 10)\)</span> which leads to a total of <span class="math inline">\(15,000\)</span> simulations for our <span class="math inline">\(Y\)</span> variable. For comparison at the end we will consider the <span class="math inline">\(F statistic\)</span>, <span class="math inline">\(p-value\)</span>, and <span class="math inline">\(R^2\)</span> to determine which empirical distribution. <br /></p>
+</div>
+<div id="methods" class="section level3">
+<h3><strong>Methods</strong></h3>
 <pre class="r"><code>birthday = 19890927
 set.seed(birthday)
 library(readr)
@@ -461,17 +484,48 @@ for (iter in 1:simulations) {
   sim3_data$non_p[iter] = pf(summary(non_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
   sim3_data$non_r[iter] = summary(non_model)$r.squared
 }</code></pre>
-<ul>
-<li><strong>Results</strong></li>
-<li><strong>Discussion</strong></li>
-</ul>
+</div>
+<div id="results" class="section level3">
+<h3><strong>Results</strong></h3>
+</div>
+<div id="discussion" class="section level3">
+<h3><strong>Discussion</strong></h3>
+</div>
 </div>
 <div id="simulation-study-2-using-rmse-for-selection" class="section level2">
 <h2>Simulation Study 2: Using RMSE for Selection?</h2>
+<div id="introduction-1" class="section level3">
+<h3><strong>Introduction</strong></h3>
+<p><br /> In this Simulation Study we will be looking at RMSE, root mean sequared error, when considering multiple models and will use simulation to determine if our selected model is the actual <strong>best</strong> model. The model we have selected to model is</p>
 <ul>
-<li><strong>Introduction</strong></li>
-<li><strong>Methods</strong></li>
+<li><span class="math inline">\(Y_i = \beta_0 + \beta_1 x_{i1} + \beta_2 x_{i2} + \beta_3 x_{i3} + \beta_4 x_{i4} + \beta_5 x_{i5} + \beta_6 x_{i6} + \epsilon_i\)</span>
+<ul>
+<li><span class="math inline">\(\beta_0 = 0\)</span></li>
+<li><span class="math inline">\(\beta_1 = 5\)</span></li>
+<li><span class="math inline">\(\beta_2 = -4\)</span></li>
+<li><span class="math inline">\(\beta_3 = 1.6\)</span></li>
+<li><span class="math inline">\(\beta_4 = -1.1\)</span></li>
+<li><span class="math inline">\(\beta_5 = 0.7\)</span></li>
+<li><span class="math inline">\(\beta_6 = 0.3\)</span></li>
+<li><span class="math inline">\(\epsilon_i \sim N(0, \sigma^2)\)</span> where <span class="math inline">\(\sigma \in (1, 2, 4)\)</span> <br /></li>
+</ul></li>
 </ul>
+<p>From this model we will fit the following models</p>
+<ul>
+<li><span class="math inline">\(y \sim x1\)</span></li>
+<li><span class="math inline">\(y \sim x1 + x2\)</span></li>
+<li><span class="math inline">\(y \sim x1 + x2 + x3\)</span></li>
+<li><span class="math inline">\(y \sim x1 + x2 + x3 + x4\)</span></li>
+<li><span class="math inline">\(y \sim x1 + x2 + x3 + x4 + x5\)</span></li>
+<li><span class="math inline">\(y \sim x1 + x2 + x3 + x4 + x5 + x6\)</span></li>
+<li><span class="math inline">\(y \sim x1 + x2 + x3 + x4 + x5 + x6 + x7\)</span></li>
+<li><span class="math inline">\(y \sim x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8\)</span></li>
+<li><span class="math inline">\(y \sim x1 + x2 + x3 + x4 + x5 + x6 + x7 + x8 + x9\)</span> <br /></li>
+</ul>
+<p>The data contained in <code>study_2.csv</code> consists of <span class="math inline">\(500\)</span> observations which we will split in half randomly each for a training and a testing dataset which we will run <span class="math inline">\(1000\)</span> times for each value of <span class="math inline">\(\sigma\)</span> which totals <span class="math inline">\(3,000\)</span> simulations and <span class="math inline">\(27,000\)</span> models trained.</p>
+</div>
+<div id="methods-1" class="section level3">
+<h3><strong>Methods</strong></h3>
 <pre class="r"><code>birthday = 19890927
 set.seed(birthday)
 library(readr)
@@ -641,17 +695,34 @@ for (iter in 1:simulations) {
   sim3_rmse_test$model_8[iter] = calculate_rmse(test_data$y, predict(model_8, test_data))
   sim3_rmse_test$model_9[iter] = calculate_rmse(test_data$y, predict(model_9, test_data))
 }</code></pre>
-<ul>
-<li><strong>Results</strong></li>
-<li><strong>Discussion</strong></li>
-</ul>
+</div>
+<div id="results-1" class="section level3">
+<h3><strong>Results</strong></h3>
+</div>
+<div id="discussion-1" class="section level3">
+<h3><strong>Discussion</strong></h3>
+</div>
 </div>
 <div id="simulation-study-3-power" class="section level2">
 <h2>Simulation Study 3: Power</h2>
+<div id="introduction-2" class="section level3">
+<h3><strong>Introduction</strong></h3>
+<br /> In this Simulation Study we will be looking at <strong>power</strong> on a simple linear regression test of the following <br /> <br />
+<center>
+<span class="math inline">\(H_0: \beta_1 = 0\: vs\: H_1: \ne 0\)</span>
+</center>
+<p><br /></p>
+<p>We define <strong>power</strong> as the probability of reject the null hypothesis when the null is not true or can be written as <span class="math inline">\(P[Reject \: H_0| H_1 \: True]\)</span>. In order to test this with simulation we will simulate</p>
+<p><span class="math display">\[Y_i = \beta_0 + \beta_1 x_{1i}+ \epsilon_i\]</span></p>
 <ul>
-<li><strong>Introduction</strong></li>
-<li><strong>Methods</strong></li>
+<li><span class="math inline">\(\beta_0 = 0\)</span></li>
+<li><span class="math inline">\(\beta_1 \in (-2, -1.9, ..., 1.9, 2)\)</span></li>
+<li><span class="math inline">\(\epsilon_i \sim N(0, \sigma^2)\)</span> where <span class="math inline">\(\sigma \in (1, 2, 4)\)</span></li>
 </ul>
+<p>For this we will also use a variable sample size of <span class="math inline">\(n \in (10, 20, 30)\)</span>, but for our test we will hold <span class="math inline">\(\alpha = 0.05\)</span> for testing our <span class="math inline">\(p-value\)</span> we generate from simulating the <span class="math inline">\(X\)</span> <span class="math inline">\(1,000\)</span> times. At the end we will look at how <strong>power</strong> changes depending on <span class="math inline">\(beta_1\)</span>, <span class="math inline">\(n\)</span>, and <span class="math inline">\(\sigma\)</span>.</p>
+</div>
+<div id="methods-2" class="section level3">
+<h3><strong>Methods</strong></h3>
 <pre class="r"><code>birthday = 19890927
 set.seed(birthday)
 beta_0 = 0
@@ -705,10 +776,13 @@ for (sample in samples) {
   mean_n[i] = mean(power_data$power[power_data$n == sample])
   i = i + 1
 }</code></pre>
-<ul>
-<li><strong>Results</strong></li>
-<li><strong>Discussion</strong></li>
-</ul>
+</div>
+<div id="results-2" class="section level3">
+<h3><strong>Results</strong></h3>
+</div>
+<div id="discussion-2" class="section level3">
+<h3><strong>Discussion</strong></h3>
+</div>
 </div>
 
 
