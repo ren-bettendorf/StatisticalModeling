@@ -504,63 +504,48 @@ for (sigma in sigmas) {
 
 ```{r}
 library(ggplot2)
-power_data_sub = power_data[which(power_data$sigma == 1),]
-power1 = power_data_sub[which(power_data_sub$n == 10),]
-power2 = power_data_sub[which(power_data_sub$n == 20), c("n", "power")]
-power3 = power_data_sub[which(power_data_sub$n == 30), c("n", "power")]
+power1 = power_data[which((power_data$n == 10) & (power_data$sigma == 1)), c("beta_1", "power")]
+power2 = power_data[which((power_data$n == 20) & (power_data$sigma == 1)), c("power")]
+power3 = power_data[which((power_data$n == 30) & (power_data$sigma == 1)), c("power")]
 
 power_full = cbind(power1, power2, power3)
-colnames(power_full) = c("sigma", "beta1", "n10", "power_n10", "n20", "power_n20", "n30", "power_n30" )
+colnames(power_full) = c("beta_1", "power_1", "power_2", "power_3")
 
-ggplot(data=power_full, aes(x = n10)) + geom_line(aes(x = n10, y = power_n10, color = "power_n10"), size=1) +   geom_line(aes(x = n10, y = power_n20, color = "power_n20"), size=1) +
-  geom_line(aes(x = n10, y = power_n30, color = "power_n30"), size=1) +
+ggplot(data=power_full, aes(x = beta_1)) + geom_line(aes(x = beta_1, y = power_1, color = "power_1"), size=1) +   geom_line(aes(x = beta_1, y = power_2, color = "power_2"), size=1) +
+  geom_line(aes(x = beta_1, y = power_3, color = "power_3"), size=1) +
   xlab("Possible Beta 1 Values") +
   ylab("Power") +
-  ggtitle("Power vs. Beta 1 Values - Different Sample Sizes - Sigma = 1") +
-  scale_color_manual(
-                      values = c("power_n10" = "blue", "power_n20" = "green", "power_n30" = "red"),
-                      labels = c("n = 10", "n = 20", "n = 30")
-                    )
+  ggtitle("Power vs. Beta 1 Values - Different Sample Sizes - Sigma = 1")
 ```
 
 ```{r}
-power_data_sub = power_data[which(power_data$sigma == 2),]
-power1 = power_data_sub[which(power_data_sub$n == 10),]
-power2 = power_data_sub[which(power_data_sub$n == 20), c("n", "power")]
-power3 = power_data_sub[which(power_data_sub$n == 30), c("n", "power")]
+power1 = power_data[which((power_data$n == 10) & (power_data$sigma == 2)), c("beta_1", "power")]
+power2 = power_data[which((power_data$n == 20) & (power_data$sigma == 2)), c("power")]
+power3 = power_data[which((power_data$n == 30) & (power_data$sigma == 2)), c("power")]
 
 power_full = cbind(power1, power2, power3)
-colnames(power_full) = c("sigma", "beta1", "n10", "power_n10", "n20", "power_n20", "n30", "power_n30" )
+colnames(power_full) = c("beta_1", "power_1", "power_2", "power_3")
 
-ggplot(data=power_full, aes(x = n10)) + geom_line(aes(x = n10, y = power_n10, color = "power_n10"), size=1) +   geom_line(aes(x = n10, y = power_n20, color = "power_n20"), size=1) +
-  geom_line(aes(x = n10, y = power_n30, color = "power_n30"), size=1) +
+ggplot(data=power_full, aes(x = beta_1)) + geom_line(aes(x = beta_1, y = power_1, color = "power_1"), size=1) +   geom_line(aes(x = beta_1, y = power_2, color = "power_2"), size=1) +
+  geom_line(aes(x = beta_1, y = power_3, color = "power_3"), size=1) +
   xlab("Possible Beta 1 Values") +
   ylab("Power") +
-  ggtitle("Power vs. Beta 1 Values - Different Sample Sizes - Sigma = 2") +
-  scale_color_manual(
-                      values = c("power_n10" = "blue", "power_n20" = "green", "power_n30" = "red"),
-                      labels = c("n = 10", "n = 20", "n = 30")
-                    )
+  ggtitle("Power vs. Beta 1 Values - Different Sample Sizes - Sigma = 2")
 ```
 
 ```{r}
-power_data_sub = power_data[which(power_data$sigma == 4),]
-power1 = power_data_sub[which(power_data_sub$n == 10),]
-power2 = power_data_sub[which(power_data_sub$n == 20), c("n", "power")]
-power3 = power_data_sub[which(power_data_sub$n == 30), c("n", "power")]
+power1 = power_data[which((power_data$n == 10) & (power_data$sigma == 4)), c("beta_1", "power")]
+power2 = power_data[which((power_data$n == 20) & (power_data$sigma == 4)), c("power")]
+power3 = power_data[which((power_data$n == 30) & (power_data$sigma == 4)), c("power")]
 
-power_full = cbind(power1, power2, power3)
-colnames(power_full) = c("sigma", "beta1", "n10", "power_n10", "n20", "power_n20", "n30", "power_n30" )
+power_graph_data = cbind(power1, power2, power3)
+colnames(power_graph_data) = c("beta_1", "power_1", "power_2","power_3" )
 
-ggplot(data=power_full, aes(x = n10)) + geom_line(aes(x = n10, y = power_n10, color = "power_n10"), size=1) +   geom_line(aes(x = n10, y = power_n20, color = "power_n20"), size=1) +
-  geom_line(aes(x = n10, y = power_n30, color = "power_n30"), size=1) +
+ggplot(data=power_graph_data, aes(x = beta_1)) + geom_line(aes(x = beta_1, y = power_1, color = "power_1"), size=1) +   geom_line(aes(x = beta_1, y = power_2, color = "power_2"), size=1) +
+  geom_line(aes(x = beta_1, y = power_3, color = "power_3"), size=1) +
   xlab("Possible Beta 1 Values") +
   ylab("Power") +
-  ggtitle("Power vs. Beta 1 Values - Different Sample Sizes - Sigma = 4") +
-  scale_color_manual(
-                      values = c("power_n10" = "blue", "power_n20" = "green", "power_n30" = "red"),
-                      labels = c("n = 10", "n = 20", "n = 30")
-                    )
+  ggtitle("Power vs. Beta 1 Values - Different Sample Sizes - Sigma = 4")
 ```
 
 
