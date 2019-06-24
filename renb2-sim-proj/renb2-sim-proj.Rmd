@@ -35,6 +35,10 @@ What we mean by investigate the significance of regression is to investigate the
 <br />
 
 ### **Methods**
+
+<br />
+Setup our variables to simulate our values
+<br />
 ```{r setup_model_1, message=FALSE, warning=FALSE, cache=TRUE}
 birthday = 19890927
 set.seed(birthday)
@@ -62,7 +66,10 @@ sigma = c(1, 5, 10)
 simulations = 2500
 ```
 
-```{r simulate_model_1, cache=TRUE}
+<br />
+Run our first simulation and store in a dataframe for our results
+<br />
+```{r simulate_model_1_1, cache=TRUE}
 sim1_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
 for (iter in 1:simulations) {
@@ -79,7 +86,12 @@ for (iter in 1:simulations) {
   sim1_data$non_p[iter] = pf(summary(non_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
   sim1_data$non_r[iter] = summary(non_model)$r.squared
 }
+```
 
+<br />
+Run our second simulation and store in a dataframe for our results
+<br />
+```{r simulate_model_1_2, cache=TRUE}
 sim2_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
 for (iter in 1:simulations) {
@@ -96,7 +108,12 @@ for (iter in 1:simulations) {
   sim2_data$non_p[iter] = pf(summary(non_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
   sim2_data$non_r[iter] = summary(non_model)$r.squared
 }
+```
 
+<br />
+Run our third simulation and store in a dataframe for our results
+<br />
+```{r simulate_model_1_3, cache=TRUE}
 sim3_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
 for (iter in 1:simulations) {
@@ -181,7 +198,11 @@ calculate_rmse  = function(actual, predicted) {
   return(sqrt(mean((actual - predicted)^2)))
 }
 ```
-```{r simulate_models_2, cache=TRUE}
+
+<br />
+Run our first simulation and store in a dataframe for our results
+<br />
+```{r simulate_model_2_1, cache=TRUE}
 sim1_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
                              model_4 = rep(0, simulations), model_5 = rep(0, simulations), model_6 = rep(0, simulations),
                              model_7 = rep(0, simulations), model_8 = rep(0, simulations), model_9 = rep(0, simulations))
@@ -227,6 +248,12 @@ for (iter in 1:simulations) {
   sim1_rmse_test$model_9[iter] = calculate_rmse(test_data$y, predict(model_9, test_data))
 }
 
+```
+
+<br />
+Run our second simulation and store in a dataframe for our results
+<br />
+```{r simulate_model_2_2, cache=TRUE}
 sim2_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
                              model_4 = rep(0, simulations), model_5 = rep(0, simulations), model_6 = rep(0, simulations),
                              model_7 = rep(0, simulations), model_8 = rep(0, simulations), model_9 = rep(0, simulations))
@@ -275,6 +302,12 @@ for (iter in 1:simulations) {
   sim2_rmse_test$model_9[iter] = calculate_rmse(test_data$y, predict(model_9, test_data))
 }
 
+```
+
+<br />
+Run our third simulation and store in a dataframe for our results
+<br />
+```{r simulate_model_2_3, cache=TRUE}
 sim3_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
                              model_4 = rep(0, simulations), model_5 = rep(0, simulations), model_6 = rep(0, simulations),
                              model_7 = rep(0, simulations), model_8 = rep(0, simulations), model_9 = rep(0, simulations))
@@ -348,9 +381,12 @@ We define **power** as the probability of reject the null hypothesis when the nu
   -  $\beta_1 \in (-2, -1.9, ..., 1.9, 2)$
   -  $\epsilon_i \sim N(0, \sigma^2)$ where $\sigma \in (1, 2, 4)$
   
-For this we will also use a variable sample size of $n \in (10, 20, 30)$, but for our test we will hold $\alpha = 0.05$ for testing our $p-value$ we generate from simulating $1,000$ times. At the end we will look at how **power** changes depending on $beta_1$, $n$, and $\sigma$.
+For this we will also use a variable sample size of $n \in (10, 20, 30)$, but for our test we will hold $\alpha = 0.05$ for testing our $p-value$ we generate from simulating $1,000$ times. At the end we will look at how **power** changes depending on $\beta_1$, $n$, and $\sigma$.
 
 ###  **Methods**
+<br />
+Setup the variables for our power simulation.
+<br />
 ```{r setup_power_values, cache=TRUE}
 birthday = 19890927
 set.seed(birthday)
@@ -364,6 +400,9 @@ number_iterations = length(sigmas) * length(samples) * length(beta_1_list)
 power_data = data.frame(sigma = rep(0, number_iterations), n = rep(0, number_iterations),
                         beta_1 = rep(0, number_iterations), power = rep(0, number_iterations))
 ```
+<br />
+Run our simulation for power.
+<br />
 ```{r simulate_power, cache=TRUE}
 i = 1
 for (sigma in sigmas) {

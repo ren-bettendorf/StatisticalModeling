@@ -410,6 +410,7 @@ $(document).ready(function () {
 </div>
 <div id="methods" class="section level3">
 <h3><strong>Methods</strong></h3>
+<p><br /> Setup our variables to simulate our values <br /></p>
 <pre class="r"><code>birthday = 19890927
 set.seed(birthday)
 library(readr)
@@ -434,6 +435,7 @@ non_beta_3 = 0
 
 sigma = c(1, 5, 10)
 simulations = 2500</code></pre>
+<p><br /> Run our first simulation and store in a dataframe for our results <br /></p>
 <pre class="r"><code>sim1_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
 for (iter in 1:simulations) {
@@ -449,9 +451,9 @@ for (iter in 1:simulations) {
   sim1_data$non_f[iter] = summary(non_model)$fstatistic[[1]]
   sim1_data$non_p[iter] = pf(summary(non_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
   sim1_data$non_r[iter] = summary(non_model)$r.squared
-}
-
-sim2_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
+}</code></pre>
+<p><br /> Run our second simulation and store in a dataframe for our results <br /></p>
+<pre class="r"><code>sim2_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
 for (iter in 1:simulations) {
   eps = rnorm(n, mean = 0, sd = sigma[2])
@@ -466,9 +468,9 @@ for (iter in 1:simulations) {
   sim2_data$non_f[iter] = summary(non_model)$fstatistic[[1]]
   sim2_data$non_p[iter] = pf(summary(non_model)$fstatistic[[1]], df1 = p - 1, df2 = n - p, lower.tail = FALSE)
   sim2_data$non_r[iter] = summary(non_model)$r.squared
-}
-
-sim3_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
+}</code></pre>
+<p><br /> Run our third simulation and store in a dataframe for our results <br /></p>
+<pre class="r"><code>sim3_data = data.frame(sig_f = rep(0, simulations), sig_p = rep(0, simulations), sig_r = rep(0, simulations),
                        non_f = rep(0, simulations), non_p = rep(0, simulations), non_r = rep(0, simulations))
 for (iter in 1:simulations) {
   eps = rnorm(n, mean = 0, sd = sigma[3])
@@ -554,6 +556,7 @@ simulations = 1000
 calculate_rmse  = function(actual, predicted) {
   return(sqrt(mean((actual - predicted)^2)))
 }</code></pre>
+<p><br /> Run our first simulation and store in a dataframe for our results <br /></p>
 <pre class="r"><code>sim1_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
                              model_4 = rep(0, simulations), model_5 = rep(0, simulations), model_6 = rep(0, simulations),
                              model_7 = rep(0, simulations), model_8 = rep(0, simulations), model_9 = rep(0, simulations))
@@ -597,9 +600,9 @@ for (iter in 1:simulations) {
   sim1_rmse_test$model_7[iter] = calculate_rmse(test_data$y, predict(model_7, test_data))
   sim1_rmse_test$model_8[iter] = calculate_rmse(test_data$y, predict(model_8, test_data))
   sim1_rmse_test$model_9[iter] = calculate_rmse(test_data$y, predict(model_9, test_data))
-}
-
-sim2_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
+}</code></pre>
+<p><br /> Run our second simulation and store in a dataframe for our results <br /></p>
+<pre class="r"><code>sim2_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
                              model_4 = rep(0, simulations), model_5 = rep(0, simulations), model_6 = rep(0, simulations),
                              model_7 = rep(0, simulations), model_8 = rep(0, simulations), model_9 = rep(0, simulations))
 
@@ -645,9 +648,9 @@ for (iter in 1:simulations) {
   sim2_rmse_test$model_7[iter] = calculate_rmse(test_data$y, predict(model_7, test_data))
   sim2_rmse_test$model_8[iter] = calculate_rmse(test_data$y, predict(model_8, test_data))
   sim2_rmse_test$model_9[iter] = calculate_rmse(test_data$y, predict(model_9, test_data))
-}
-
-sim3_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
+}</code></pre>
+<p><br /> Run our third simulation and store in a dataframe for our results <br /></p>
+<pre class="r"><code>sim3_rmse_train = data.frame(model_1 = rep(0, simulations), model_2 = rep(0, simulations), model_3 = rep(0, simulations),
                              model_4 = rep(0, simulations), model_5 = rep(0, simulations), model_6 = rep(0, simulations),
                              model_7 = rep(0, simulations), model_8 = rep(0, simulations), model_9 = rep(0, simulations))
 
@@ -719,10 +722,11 @@ for (iter in 1:simulations) {
 <li><span class="math inline">\(\beta_1 \in (-2, -1.9, ..., 1.9, 2)\)</span></li>
 <li><span class="math inline">\(\epsilon_i \sim N(0, \sigma^2)\)</span> where <span class="math inline">\(\sigma \in (1, 2, 4)\)</span></li>
 </ul>
-<p>For this we will also use a variable sample size of <span class="math inline">\(n \in (10, 20, 30)\)</span>, but for our test we will hold <span class="math inline">\(\alpha = 0.05\)</span> for testing our <span class="math inline">\(p-value\)</span> we generate from simulating the <span class="math inline">\(X\)</span> <span class="math inline">\(1,000\)</span> times. At the end we will look at how <strong>power</strong> changes depending on <span class="math inline">\(beta_1\)</span>, <span class="math inline">\(n\)</span>, and <span class="math inline">\(\sigma\)</span>.</p>
+<p>For this we will also use a variable sample size of <span class="math inline">\(n \in (10, 20, 30)\)</span>, but for our test we will hold <span class="math inline">\(\alpha = 0.05\)</span> for testing our <span class="math inline">\(p-value\)</span> we generate from simulating <span class="math inline">\(1,000\)</span> times. At the end we will look at how <strong>power</strong> changes depending on <span class="math inline">\(beta_1\)</span>, <span class="math inline">\(n\)</span>, and <span class="math inline">\(\sigma\)</span>.</p>
 </div>
 <div id="methods-2" class="section level3">
 <h3><strong>Methods</strong></h3>
+<p><br /> Setup the variables for our power simulation. <br /></p>
 <pre class="r"><code>birthday = 19890927
 set.seed(birthday)
 beta_0 = 0
@@ -734,6 +738,7 @@ simulations = 1000
 number_iterations = length(sigmas) * length(samples) * length(beta_1_list)
 power_data = data.frame(sigma = rep(0, number_iterations), n = rep(0, number_iterations),
                         beta_1 = rep(0, number_iterations), power = rep(0, number_iterations))</code></pre>
+<p><br /> Run our simulation for power. <br /></p>
 <pre class="r"><code>i = 1
 for (sigma in sigmas) {
   for (n in samples) {
