@@ -136,48 +136,48 @@ for (iter in 1:simulations) {
 <br />
 We do not know the distribution for our **Signficant** model so we will focus our data only on the **Non-Significant** model.
 ```{r}
-hist(sim1_data$non_f, main = "Non-Significant F - Sigma = 1", prob = TRUE, breaks = 50)
+hist(sim1_data$non_f, main = expression(paste("Non-Significant F - ", sigma, " = 1")), prob = TRUE, breaks = 50)
 x = sim1_data$non_f
 curve(df(x, df1 = p - 1, df2 = n - p), col = "Orange", add = TRUE, lwd = 3)
 ```
 ```{r}
-hist(sim2_data$non_f, main = "Non-Significant F - Sigma = 5", prob = TRUE, breaks = 50)
+hist(sim2_data$non_f, main = expression(paste("Non-Significant F - ", sigma, " = 5")), prob = TRUE, breaks = 50)
 x = sim2_data$non_f
 curve(df(x, df1 = p - 1, df2 = n - p), col = "Orange", add = TRUE, lwd = 3)
 ```
 ```{r}
-hist(sim3_data$non_f, main = "Non-Significant F - Sigma = 10", prob = TRUE, breaks = 50)
+hist(sim3_data$non_f, main = expression(paste("Non-Significant F - ", sigma, " = 10")), prob = TRUE, breaks = 50)
 x = sim3_data$non_f
 curve(df(x, df1 = p - 1, df2 = n - p), col = "Orange", add = TRUE, lwd = 3)
 ```
 ```{r}
-hist(sim1_data$non_p, main = 'Non-Significant P-Value - Sigma = 1', prob = TRUE, breaks = 40)
+hist(sim1_data$non_p, main = expression(paste("Non-Significant P-Value - ", sigma, " = 1")), prob = TRUE, breaks = 40)
 x = sim1_data$non_p
 curve(dunif(x), col='orange', add=TRUE, lwd=3)
 ```
 ```{r}
-hist(sim2_data$non_p, main = 'Non-Significant P-Value - Sigma = 5', prob = TRUE, breaks = 40)
+hist(sim2_data$non_p, main = expression(paste("Non-Significant P-Value - ", sigma, " = 5")), prob = TRUE, breaks = 40)
 x = sim2_data$non_p
 curve(dunif(x), col='orange', add=TRUE, lwd=3)
 ```
 ```{r}
-hist(sim3_data$non_p, main = 'Non-Significant P-Value - Sigma = 10', prob = TRUE, breaks = 40)
+hist(sim3_data$non_p, main = expression(paste("Non-Significant P-Value - ", sigma, " = 10")), prob = TRUE, breaks = 40)
 x = sim3_data$non_p
 curve(dunif(x), col='orange', add=TRUE, lwd=3)
 ```
 
 ```{r}
-hist(sim1_data$non_r, main = 'Non-Significant R Squared - Sigma = 1', prob = TRUE, breaks = 40)
+hist(sim1_data$non_r, main = expression(paste("Non-Significant ", R^2, " - ", sigma, " = 1")), prob = TRUE, breaks = 40)
 x = sim1_data$non_r
 curve(dbeta(x, (p-1)/2, (n-p)/2), col='orange', add=TRUE, lwd=3)
 ```
 ```{r}
-hist(sim2_data$non_r, main = 'Non-Significant R Squared - Sigma = 5', prob = TRUE, breaks = 40)
+hist(sim2_data$non_r, main = expression(paste("Non-Significant ", R^2, " - ", sigma, " = 5")), prob = TRUE, breaks = 40)
 x = sim2_data$non_r
 curve(dbeta(x, (p-1)/2, (n-p)/2), col='orange', add=TRUE, lwd=3)
 ```
 ```{r}
-hist(sim2_data$non_r, main = 'Non-Significant R Squared - Sigma = 10', prob = TRUE, breaks = 40)
+hist(sim2_data$non_r, main = expression(paste("Non-Significant ", R^2, " - ", sigma, " = 10")), prob = TRUE, breaks = 40)
 x = sim2_data$non_r
 curve(dbeta(x, (p-1)/2, (n-p)/2), col='orange', add=TRUE, lwd=3)
 ```
@@ -408,6 +408,26 @@ for (iter in 1:simulations) {
 ```
 
 ###  **Results**
+
+```{r}
+barplot(table(factor(colnames(sim1_rmse_test)[apply(sim1_rmse_test, 1, function(x) which.min(x))], levels = colnames(sim1_rmse_test))), las = 2)
+```
+```{r}
+barplot(table(factor(colnames(sim2_rmse_test)[apply(sim2_rmse_test, 1, function(x) which.min(x))], levels = colnames(sim2_rmse_test))), las = 2)
+```
+```{r}
+barplot(table(factor(colnames(sim3_rmse_test)[apply(sim3_rmse_test, 1, function(x) which.min(x))], levels = colnames(sim3_rmse_test))), las = 2)
+```
+
+```{r}
+library(knitr)
+mean_data = data.frame(sigma_1_train = apply(sim1_rmse_train, 2, mean), sigma_1_test = apply(sim1_rmse_test, 2, mean), sigma_2_train = apply(sim2_rmse_train, 2, mean), sigma_2_test = apply(sim2_rmse_test, 2, mean), sigam_3_train = apply(sim3_rmse_train, 2, mean), sigam_3_test = apply(sim3_rmse_test, 2, mean))
+kable(t(mean_data), col.names=c("Model 1 Mean RMSE", "Model 2 Mean RMSE", "Model 3 Mean RMSE",
+                                "Model 4 Mean RMSE", "Model 5 Mean RMSE", "Model 6 Mean RMSE",
+                                "Model 7 Mean RMSE", "Model 8 Mean RMSE", "Model 9 Mean RMSE"))
+```
+
+
 ###  **Discussion**
 
 ## Simulation Study 3: Power
