@@ -133,6 +133,55 @@ for (iter in 1:simulations) {
 ```
 
 ###  **Results**
+<br />
+We do not know the distribution for our **Signficant** model so we will focus our data only on the **Non-Significant** model.
+```{r}
+hist(sim1_data$non_f, main = "Non-Significant F - Sigma = 1", prob = TRUE, breaks = 50)
+x = sim1_data$non_f
+curve(df(x, df1 = p - 1, df2 = n - p), col = "Orange", add = TRUE, lwd = 3)
+```
+```{r}
+hist(sim2_data$non_f, main = "Non-Significant F - Sigma = 5", prob = TRUE, breaks = 50)
+x = sim2_data$non_f
+curve(df(x, df1 = p - 1, df2 = n - p), col = "Orange", add = TRUE, lwd = 3)
+```
+```{r}
+hist(sim3_data$non_f, main = "Non-Significant F - Sigma = 10", prob = TRUE, breaks = 50)
+x = sim3_data$non_f
+curve(df(x, df1 = p - 1, df2 = n - p), col = "Orange", add = TRUE, lwd = 3)
+```
+```{r}
+hist(sim1_data$non_p, main = 'Non-Significant P-Value - Sigma = 1', prob = TRUE, breaks = 40)
+x = sim1_data$non_p
+curve(dunif(x), col='orange', add=TRUE, lwd=3)
+```
+```{r}
+hist(sim2_data$non_p, main = 'Non-Significant P-Value - Sigma = 5', prob = TRUE, breaks = 40)
+x = sim2_data$non_p
+curve(dunif(x), col='orange', add=TRUE, lwd=3)
+```
+```{r}
+hist(sim3_data$non_p, main = 'Non-Significant P-Value - Sigma = 10', prob = TRUE, breaks = 40)
+x = sim3_data$non_p
+curve(dunif(x), col='orange', add=TRUE, lwd=3)
+```
+
+```{r}
+hist(sim1_data$non_r, main = 'Non-Significant R Squared - Sigma = 1', prob = TRUE, breaks = 40)
+x = sim1_data$non_r
+curve(dbeta(x, (p-1)/2, (n-p)/2), col='orange', add=TRUE, lwd=3)
+```
+```{r}
+hist(sim2_data$non_r, main = 'Non-Significant R Squared - Sigma = 5', prob = TRUE, breaks = 40)
+x = sim2_data$non_r
+curve(dbeta(x, (p-1)/2, (n-p)/2), col='orange', add=TRUE, lwd=3)
+```
+```{r}
+hist(sim2_data$non_r, main = 'Non-Significant R Squared - Sigma = 10', prob = TRUE, breaks = 40)
+x = sim2_data$non_r
+curve(dbeta(x, (p-1)/2, (n-p)/2), col='orange', add=TRUE, lwd=3)
+```
+
 ###  **Discussion**
 
 ## Simulation Study 2: Using RMSE for Selection?
@@ -397,13 +446,13 @@ samples = c(10, 20, 30)
 alpha = 0.05
 simulations = 1000
 number_iterations = length(sigmas) * length(samples) * length(beta_1_list)
-power_data = data.frame(sigma = rep(0, number_iterations), n = rep(0, number_iterations),
-                        beta_1 = rep(0, number_iterations), power = rep(0, number_iterations))
 ```
 <br />
 Run our simulation for power.
 <br />
 ```{r simulate_power, cache=TRUE}
+power_data = data.frame(sigma = rep(0, number_iterations), n = rep(0, number_iterations),
+                        beta_1 = rep(0, number_iterations), power = rep(0, number_iterations))
 i = 1
 for (sigma in sigmas) {
   for (n in samples) {
