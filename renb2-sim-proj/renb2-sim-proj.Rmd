@@ -156,8 +156,8 @@ x = sim1_data$non_p
 curve(dunif(x), col='orange', add=TRUE, lwd=3)
 ```
 ```{r}
-hist(sim2_data$non_p, main = expression(paste("Non-Significant P-Value - ", sigma, " = 5")), prob = TRUE, breaks = 40)
-x = sim2_data$non_p
+hist(sim1_data$non_p, main = expression(paste("Non-Significant P-Value - ", sigma, " = 1")), prob = TRUE, breaks = 40)
+x = sim1_data$non_p
 curve(dunif(x), col='orange', add=TRUE, lwd=3)
 ```
 ```{r}
@@ -177,12 +177,21 @@ x = sim2_data$non_r
 curve(dbeta(x, (p-1)/2, (n-p)/2), col='orange', add=TRUE, lwd=3)
 ```
 ```{r}
-hist(sim2_data$non_r, main = expression(paste("Non-Significant ", R^2, " - ", sigma, " = 10")), prob = TRUE, breaks = 40)
-x = sim2_data$non_r
+hist(sim3_data$non_r, main = expression(paste("Non-Significant ", R^2, " - ", sigma, " = 10")), prob = TRUE, breaks = 40)
+x = sim3_data$non_r
 curve(dbeta(x, (p-1)/2, (n-p)/2), col='orange', add=TRUE, lwd=3)
 ```
 
 ###  **Discussion**
+<br />
+* **True Distributions**
+<br />
+We do not know the true distribution for any of the given values, but we can make inferences upon how they relate dependent on each other to our $Y$. One of the main assumptions we make in linear regression is that we know how the data is distributed, but we inherently can't know the true distribution so we assume that it follows some distribution. We are able to know the true distribution of the null model as this assumes each of our predictors does not influence $Y$ which allows for us to know the distribution of the $F$ statistic, P-value, and $R^2$. 
+
+* **How are $R^2$ and $\sigma$ related?**
+<br />
+$R^2$ and $\sigma$ are related due to $\sigma$ controlling how much variance is found in the model which means that as $\sigma$ increases we can expect $R^2$ to decrease as $R^2$ is a measure of how accuracte our model is. This is proved through our graphs above due to how as $\sigma$ increases the model is less significant and unable to predict values as accurately thus proving a negative relationship between $R^2$ and $\sigma$.
+<br />
 
 ## Simulation Study 2: Using RMSE for Selection?
 
@@ -420,15 +429,38 @@ barplot(table(factor(colnames(sim3_rmse_test)[apply(sim3_rmse_test, 1, function(
 ```
 
 ```{r}
-library(knitr)
-mean_data = data.frame(sigma_1_train = apply(sim1_rmse_train, 2, mean), sigma_1_test = apply(sim1_rmse_test, 2, mean), sigma_2_train = apply(sim2_rmse_train, 2, mean), sigma_2_test = apply(sim2_rmse_test, 2, mean), sigam_3_train = apply(sim3_rmse_train, 2, mean), sigam_3_test = apply(sim3_rmse_test, 2, mean))
-kable(t(mean_data), col.names=c("Model 1 Mean RMSE", "Model 2 Mean RMSE", "Model 3 Mean RMSE",
-                                "Model 4 Mean RMSE", "Model 5 Mean RMSE", "Model 6 Mean RMSE",
-                                "Model 7 Mean RMSE", "Model 8 Mean RMSE", "Model 9 Mean RMSE"))
+library(ggplot2)
+x_vals = seq(1, 9, 1)
+sigma_1_train = apply(sim1_rmse_train, 2, mean)
+sigma_2_train = apply(sim2_rmse_train, 2, mean)
+sigma_3_train = apply(sim3_rmse_train, 2, mean)
+sigma_1_test = apply(sim1_rmse_test, 2, mean)
+sigma_2_test = apply(sim2_rmse_test, 2, mean)
+sigma_3_test = apply(sim3_rmse_test, 2, mean)
+train_test_data = data.frame(x_vals, sigma_1_train, sigma_2_train, sigma_3_train, sigma_1_test, sigma_2_test, sigma_3_test)
+colnames(train_test_data) = c("x_vals", "sigma_1_train", "sigma_2_train", "sigma_3_train", "sigma_1_test", "sigma_2_test", "sigma_3_test")
+ggplot(data=train_test_data, aes(x = x_vals)) + 
+  geom_line(aes(x = x_vals, y = sigma_1_train, color = "red"), size=1) +   
+  geom_line(aes(x = x_vals, y = sigma_2_train, color = "orange"), size=1) +
+  geom_line(aes(x = x_vals, y = sigma_3_train, color = "blue"), size=1) +
+  geom_line(aes(x = x_vals, y = sigma_1_test, color = "green"), size=1) +   
+  geom_line(aes(x = x_vals, y = sigma_2_test, color = "purple"), size=1) +
+  geom_line(aes(x = x_vals, y = sigma_3_test, color = "yellow"), size=1) +
+  xlab("Model Size") +
+  ylab("RMSE") +
+  ggtitle("RMSE vs Model Size")
 ```
 
 
 ###  **Discussion**
+<br />
+* **Does RMSE Always select the correct model? On average, does it select the correct model?**
+<br />
+As we can see from the test data above, RMSE will not insure the correct model is selected. RMSE insures that a good model is selected as model 6 is chosen the majority of the time, but occassionally we will see that models 7, 8, and 9 are selected even though $x_7, x_8, x_9$ do not have an impact upon the model. On average, we can see from the graph that this does give us a mostly reliable way of selecting the correct model if given enough simulations.
+<br />
+* **How does the level of noise affect the results?**
+<br />
+The level of noise affects the results greatly as we can see that models 7, 8, and 9 combined rivals the choice of model 6. As $\sigma$ increases we are able to see this change much greater due to the increased distribution of noise and as a result we choose model 6 much less.
 
 ## Simulation Study 3: Power
 
@@ -503,49 +535,46 @@ for (sigma in sigmas) {
 ###  **Results**
 
 ```{r}
-library(ggplot2)
-power1 = power_data[which((power_data$n == 10) & (power_data$sigma == 1)), c("beta_1", "power")]
+beta_1 = power_data[which((power_data$n == 10) & (power_data$sigma == 1)), c("beta_1")]
+power1 = power_data[which((power_data$n == 10) & (power_data$sigma == 1)), c("power")]
 power2 = power_data[which((power_data$n == 20) & (power_data$sigma == 1)), c("power")]
 power3 = power_data[which((power_data$n == 30) & (power_data$sigma == 1)), c("power")]
 
-power_full = cbind(power1, power2, power3)
-colnames(power_full) = c("beta_1", "power_1", "power_2", "power_3")
-
-ggplot(data=power_full, aes(x = beta_1)) + geom_line(aes(x = beta_1, y = power_1, color = "power_1"), size=1) +   geom_line(aes(x = beta_1, y = power_2, color = "power_2"), size=1) +
-  geom_line(aes(x = beta_1, y = power_3, color = "power_3"), size=1) +
-  xlab("Possible Beta 1 Values") +
-  ylab("Power") +
-  ggtitle("Power vs. Beta 1 Values - Different Sample Sizes - Sigma = 1")
-```
-
-```{r}
-power1 = power_data[which((power_data$n == 10) & (power_data$sigma == 2)), c("beta_1", "power")]
-power2 = power_data[which((power_data$n == 20) & (power_data$sigma == 2)), c("power")]
-power3 = power_data[which((power_data$n == 30) & (power_data$sigma == 2)), c("power")]
-
-power_full = cbind(power1, power2, power3)
-colnames(power_full) = c("beta_1", "power_1", "power_2", "power_3")
-
-ggplot(data=power_full, aes(x = beta_1)) + geom_line(aes(x = beta_1, y = power_1, color = "power_1"), size=1) +   geom_line(aes(x = beta_1, y = power_2, color = "power_2"), size=1) +
-  geom_line(aes(x = beta_1, y = power_3, color = "power_3"), size=1) +
-  xlab("Possible Beta 1 Values") +
-  ylab("Power") +
-  ggtitle("Power vs. Beta 1 Values - Different Sample Sizes - Sigma = 2")
-```
-
-```{r}
-power1 = power_data[which((power_data$n == 10) & (power_data$sigma == 4)), c("beta_1", "power")]
-power2 = power_data[which((power_data$n == 20) & (power_data$sigma == 4)), c("power")]
-power3 = power_data[which((power_data$n == 30) & (power_data$sigma == 4)), c("power")]
-
-power_graph_data = cbind(power1, power2, power3)
-colnames(power_graph_data) = c("beta_1", "power_1", "power_2","power_3" )
+power_graph_data = data.frame(beta_1 = beta_1, power_1 = power1, power_2 = power2, power_3 = power3)
 
 ggplot(data=power_graph_data, aes(x = beta_1)) + geom_line(aes(x = beta_1, y = power_1, color = "power_1"), size=1) +   geom_line(aes(x = beta_1, y = power_2, color = "power_2"), size=1) +
   geom_line(aes(x = beta_1, y = power_3, color = "power_3"), size=1) +
-  xlab("Possible Beta 1 Values") +
+  xlab(expression(paste("", beta[1], " values"))) +
   ylab("Power") +
-  ggtitle("Power vs. Beta 1 Values - Different Sample Sizes - Sigma = 4")
+  ggtitle(expression(paste("Power vs. ", beta[1], " ", sigma, " = 1")))
+```
+
+```{r}
+power1 = power_data[which((power_data$n == 10) & (power_data$sigma == 2)), c("power")]
+power2 = power_data[which((power_data$n == 20) & (power_data$sigma == 2)), c("power")]
+power3 = power_data[which((power_data$n == 30) & (power_data$sigma == 2)), c("power")]
+
+power_graph_data = data.frame(beta_1 = beta_1, power_1 = power1, power_2 = power2, power_3 = power3)
+
+ggplot(data=power_graph_data, aes(x = beta_1)) + geom_line(aes(x = beta_1, y = power_1, color = "power_1"), size=1) +   geom_line(aes(x = beta_1, y = power_2, color = "power_2"), size=1) +
+  geom_line(aes(x = beta_1, y = power_3, color = "power_3"), size=1) +
+  xlab(expression(paste(beta[1], " values"))) +
+  ylab("Power") +
+  ggtitle(expression(paste("Power vs. ", beta[1], " ", sigma, " = 2")))
+```
+
+```{r}
+power1 = power_data[which((power_data$n == 10) & (power_data$sigma == 4)), c("power")]
+power2 = power_data[which((power_data$n == 20) & (power_data$sigma == 4)), c("power")]
+power3 = power_data[which((power_data$n == 30) & (power_data$sigma == 4)), c("power")]
+
+power_graph_data = data.frame(beta_1 = beta_1, power_1 = power1, power_2 = power2, power_3 = power3)
+
+ggplot(data=power_graph_data, aes(x = beta_1)) + geom_line(aes(x = beta_1, y = power_1, color = "power_1"), size=1) +   geom_line(aes(x = beta_1, y = power_2, color = "power_2"), size=1) +
+  geom_line(aes(x = beta_1, y = power_3, color = "power_3"), size=1) +
+  xlab(expression(paste(beta[1], " values"))) +
+  ylab("Power") +
+  ggtitle(expression(paste("Power vs. ", beta[1], " ", sigma, " = 4")))
 ```
 
 
@@ -556,16 +585,12 @@ for (sigma in sigmas) {
   mean_sigmas[i] = mean(power_data$power[power_data$sigma == sigma])
   i = i + 1
 }
-```
-```{r calculate_mean_beta_1, cache=TRUE}
 mean_beta_1s = rep(0, length(beta_1_list))
 i = 1
 for (beta_1 in beta_1_list) {
   mean_beta_1s[i] = mean(power_data$power[power_data$beta_1 == beta_1])
   i = i + 1
 }
-```
-```{r calculate_mean_sample_size, cache=TRUE}
 mean_n = rep(0, length(samples))
 i = 1
 for (sample in samples) {
@@ -575,3 +600,29 @@ for (sample in samples) {
 ```
 
 ###  **Discussion**
+<br />
+* **How do n, $\beta_1$, and $\sigma$ affect power? Consider additional plots to demonstrate these effects.**
+<br />
+For each of these values we will refer to the graphs to prove that they have an impact upon power.
+<br />
+For n, it is easy to see that as sample size increases we are sampling the Power increases much quicker which implies that there is a relationship between n and Power. This makes sense if we consider that as we increase our sample size we are decreasing the affect of random outliers that are generated and thus increasing our faith that our data is more resilient to these outliers.
+<br />
+For $\beta_1$, it is easy to see that as we increased our $\beta_1$ value that around 1 we reached a limit of $1$ due to probabilities being unable to reach values greater than $1$. Furthermore, as we moved away from our null hypothesis that $\beta_1 = 0$ we are able to see that power started gaining thus giving us more faith that by rejecting our null hypothesis given that our alternative hypothesis is correct.
+<br />
+For $\sigma$, it is easy to see that as we increased $\sigma$ we are impacting power as our graphs start to flatten out as $\sigma$ increases. This is expected as we are imparting more variance into our data generation which means we are decreasing our faith that we are properly rejecting our null hypothesis.
+<br />
+
+* **Are 1000 simulations sufficient?**
+<br />
+I believe 1000 simulations is sufficient because as a test I increased it to 2000 to see if there was a difference. What I observed was that there is not a noticable  difference other than the graphs looking smoother. This is to be expected though as we have trained 369,000 models for this study which is a rather large sample of models so if we continue this to 738,000 models we would not expect for our values to differ, but for our graphs to look better as we are generating values for each $\beta_1$ to be closer to the expected.
+
+
+
+
+
+
+
+
+
+
+
