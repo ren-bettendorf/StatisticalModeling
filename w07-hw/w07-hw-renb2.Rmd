@@ -1,6 +1,6 @@
 ---
 title: "Week 7 - Homework"
-author: "STAT 420, Summer 2018, Unger"
+author: "STAT 420, Summer 2018, Ren Bettendorf, renb2"
 date: ''
 output:
   html_document: 
@@ -9,12 +9,6 @@ output:
 urlcolor: cyan
 ---
 
-# Directions
-
-- Be sure to remove this section if you use this `.Rmd` file as a template.
-- You may leave the questions in your final document.
-
-***
 
 ```{r setup, echo = FALSE, message = FALSE, warning = FALSE}
 options(scipen = 1, digits = 4, width = 80, fig.alin = "center")
