@@ -308,7 +308,7 @@ For this test we will be doing the following:
 <br/>
     - Under $H_0$, $\beta_4 = \beta_5 = \beta_6 = 0$.
 <br/>
-    - Under $H_1$, $\beta_4, \beta_5, \beta_6 \neq 0$.
+    - Under $H_1$, $\beta_4 \neq \beta_5 \neq \beta_6 \neq 0$.
 <br />
   + The value of test statistics  is $`r anova_models[2,5]`$. 
   + The p-value of the test  is $`r anova_models[2,6]`$.
@@ -389,6 +389,9 @@ tt_p = rep(0, num_sims)
 The variable `num_sims` controls how many times we will repeat this process, which we have chosen to be `300`.
 
 **(a)** Set a seed equal to your birthday. Then write code that repeats the above process `300` times. Each time, store the appropriate values in `lm_t`, `lm_p`, `tt_t`, and `tt_p`. Specifically, each time you should use `sim_data$values = rnorm(n, mean = 42, sd = 3.5)` to update the data. The grouping will always stay the same.
+```{r}
+set.seed(19890927)
+```
 
 **(b)** Report the value obtained by running `mean(lm_t == tt_t)`, which tells us what proportion of the test statistics is equal. The result may be extremely surprising!
 

@@ -667,7 +667,7 @@ f_test = anova(hosp_add_model, hosp_int_model)</code></pre>
   (hosp_coef[2]+   (1 * hosp_coef[6])+  (1 * hosp_coef[8]) + (1 * 1 * hosp_coef[9]))*1 </code></pre>
 <pre><code>##   Age 
 ## 10.91</code></pre>
-<hr />
+<p><br /> ***</p>
 </div>
 <div id="exercise-3-hospital-support-data-stay-duration" class="section level2">
 <h2>Exercise 3 (Hospital SUPPORT Data, Stay Duration)</h2>
@@ -700,17 +700,36 @@ Y = \beta_0 + \beta_1 x_1 + \beta_2 x_2 + \beta_3 x_3 + \beta_4 x_1 x_2 + \beta_
 <li><span class="math inline">\(x_3\)</span> is <code>Rate</code>.</li>
 </ul>
 <p><strong>(a)</strong> Fit the model above. Also fit a smaller model using the provided <code>R</code> code.</p>
-<pre class="r"><code>days_add = lm(Days ~ Pressure + Blood + Rate, data = hospital)</code></pre>
+<pre class="r"><code>hospital = read_csv(&quot;hospital.csv&quot;)
+days_add = lm(Days ~ Pressure + Blood + Rate, data = hospital)
+days_int = lm(Days ~ Pressure * Blood * Rate, data = hospital)
+(anova_models = anova(days_add, days_int))</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: Days ~ Pressure + Blood + Rate
+## Model 2: Days ~ Pressure * Blood * Rate
+##   Res.Df    RSS Df Sum of Sq    F Pr(&gt;F)  
+## 1    576 279493                           
+## 2    572 275557  4      3936 2.04  0.087 .
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
 <p>Use a statistical test to compare the two models. Report the following:</p>
 <ul>
 <li>The null and alternative hypotheses in terms of the model given in the exercise description</li>
 <li>The value of the test statistic</li>
 <li>The p-value of the test</li>
 <li>A statistical decision using a significance level of <span class="math inline">\(\alpha = 0.10\)</span></li>
-<li>Which model you prefer</li>
+<li>Which model you prefer <br /> <br /> For this test we will be doing the following: <br />
+<ul>
+<li>Under <span class="math inline">\(H_0\)</span>, <span class="math inline">\(\beta_4 = \beta_5 = \beta_6 = 0\)</span>. <br /></li>
+<li>Under <span class="math inline">\(H_1\)</span>, <span class="math inline">\(\beta_4, \beta_5, \beta_6 \neq 0\)</span>. <br /></li>
+<li>The value of test statistics is <span class="math inline">\(2.0426\)</span>.</li>
+<li>The p-value of the test is <span class="math inline">\(0.087\)</span>.</li>
+<li>Using <span class="math inline">\(\alpha = 0.10\)</span> value compared to p-value of <span class="math inline">\(0.087\)</span>, we would reject the null hypothesis.</li>
+<li>Therefore, we prefer the interaction model due to our <span class="math inline">\(F\)</span>-test. <br /></li>
+</ul></li>
 </ul>
-<p><strong>(b)</strong> Give an expression based on the model in the exercise description for the true change in length of hospital stay in days for a 1 bpm increase in <code>Rate</code> for a patient with a <code>Pressure</code> of 139 mmHg and a <code>Blood</code> of 10 gm/dL. Your answer should be a linear function of the <span class="math inline">\(\beta\)</span>s.</p>
-<p><strong>(c)</strong> Give an expression based on the additive model in part <strong>(a)</strong> for the true change in length of hospital stay in days for a 1 bpm increase in <code>Rate</code> for a patient with a <code>Pressure</code> of 139 mmHg and a <code>Blood</code> of 10 gm/dL. Your answer should be a linear function of the <span class="math inline">\(\beta\)</span>s.</p>
+<p><strong>(b)</strong> Give an expression based on the model in the exercise description for the true change in length of hospital stay in days for a 1 bpm increase in <code>Rate</code> for a patient with a <code>Pressure</code> of 139 mmHg and a <code>Blood</code> of 10 gm/dL. Your answer should be a linear function of the <span class="math inline">\(\beta\)</span>s. <span class="math display">\[Y_i = \beta_0 + \beta_1 x_{1i}+ \epsilon_i\]</span> <strong>(c)</strong> Give an expression based on the additive model in part <strong>(a)</strong> for the true change in length of hospital stay in days for a 1 bpm increase in <code>Rate</code> for a patient with a <code>Pressure</code> of 139 mmHg and a <code>Blood</code> of 10 gm/dL. Your answer should be a linear function of the <span class="math inline">\(\beta\)</span>s. <span class="math display">\[Y_i = \beta_0 + \beta_1 x_{1i}+ \epsilon_i\]</span></p>
 <hr />
 </div>
 <div id="exercise-4-t-test-is-a-linear-model" class="section level2">
