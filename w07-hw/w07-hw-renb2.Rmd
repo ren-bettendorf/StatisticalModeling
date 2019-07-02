@@ -43,14 +43,53 @@ For this exercise, we will use the data stored in [`epa2015.csv`](epa2015.csv). 
 We will attempt to model `CO2` using both `horse` and `type`. In practice, we would use many more predictors, but limiting ourselves to these two, one numeric and one factor, will allow us to create a number of plots.
 
 Load the data, and check its structure using `str()`. Verify that `type` is a factor; if not, coerce it to be a factor.
+```{r message=FALSE, warning=FALSE}
+library(readr)
+epa_data = read_csv("epa2015.csv")
+str(epa_data)
+epa_data$type = as.factor(epa_data$type)
+str(epa_data)
+```
 
 **(a)** Do the following:
 
 - Make a scatterplot of `CO2` versus `horse`. Use a different color point for each vehicle `type`.
+
 - Fit a simple linear regression model with `CO2` as the response and only `horse` as the predictor.
+
 - Add the fitted regression line to the scatterplot. Comment on how well this line models the data.
-- Give an estimate for the average change in `CO2` for a one foot-pound per second increase in `horse` for a vehicle of type `car`. 
+
+
+
+- Give an estimate for the average change in `CO2` for a one foot-pound per second increase in `horse` for a vehicle of type `car`.
+
 - Give a 90% prediction interval using this model for the `CO2` of a Subaru Impreza Wagon, which is a vehicle with 148 horsepower and is considered type `Both`. (Interestingly, the dataset gives the wrong drivetrain for most Subarus in this dataset, as they are almost all listed as `F`, when they are in fact all-wheel drive.)
+```{r}
+epa_slr_model = lm(CO2 ~ horse, data = epa_data)
+colors = c("Dodgerblue","Darkgrey","Red")
+plot(CO2 ~ horse, data = epa_data, col = colors[type], main="CO2 vs Horsepower", xlab="Horsepower", ylab="CO2", pch = as.numeric(type), cex = 0.8)
+abline(epa_slr_model, col = "Orange")
+legend("topleft", c("Both", "Car","Truck"), col = colors, pch = c(1,2,3))
+```
+
+<br />
+This models does a fairly good job at fitting the "Car" data, but fails to get the increased slope we would expect for "Both" and especially "Truck".
+<br />
+
+```{r}
+pred_slope = summary(epa_slr_model)$coefficients[2, 1]
+```
+<br />
+The average change in `CO2` would be $`r pred_slope`$.
+<br />
+
+```{r}
+new_data = data.frame(horse = c(148), type = c("Both"))
+pred_co2 = predict(epa_slr_model, newdata = new_data, interval = "prediction", level = 0.90)
+```
+<br />
+The 90% prediction interval for the given data is $(`r pred_co2[2]`, `r pred_co2[3]`)$.
+<br />
 
 **(b)** Do the following:
 
@@ -59,7 +98,37 @@ Load the data, and check its structure using `str()`. Verify that `type` is a fa
 - Add the fitted regression "lines" to the scatterplot with the same colors as their respective points (one line for each vehicle type). Comment on how well this line models the data. 
 - Give an estimate for the average change in `CO2` for a one foot-pound per second increase in `horse` for a vehicle of type `car`. 
 - Give a 90% prediction interval using this model for the `CO2` of a Subaru Impreza Wagon, which is a vehicle with 148 horsepower and is considered type `Both`. 
+```{r}
+epa_add_model = lm(CO2 ~ horse + type, data = epa_data)
+int_both = coef(epa_add_model)[1]
+int_car = coef(epa_add_model)[1] + coef(epa_add_model)[3]
+int_truck = coef(epa_add_model)[1] + coef(epa_add_model)[4]
+slope_all = coef(epa_add_model)[2]
+colors = c("Dodgerblue","Darkgrey","Red")
+plot(CO2 ~ horse, data = epa_data, col = colors[type], main="CO2 vs Horsepower", xlab="Horsepower", ylab="CO2", pch = as.numeric(type), cex = 0.8)
+abline(int_both, slope_all, col = colors[1])
+abline(int_car, slope_all, col = colors[2])
+abline(int_truck, slope_all, col = colors[3])
+legend("topleft", c("Both", "Car","Truck"), col = colors, pch = c(1,2,3))
+```
 
+<br />
+This models does a better job at modeling the relationship due to creating a separation for each type which we can clearly see with the three lines. It still fails to get the slope correct for "Both" and "Truck" though as it still shares the same slope for each type.
+<br />
+
+```{r}
+pred_slope = summary(epa_add_model)$coefficients[2, 1]
+```
+<br />
+The average change in `CO2` would be $`r pred_slope`$.
+<br />
+
+```{r}
+pred_co2 = predict(epa_add_model, newdata = new_data, interval = "prediction", level = 0.90)
+```
+<br />
+The 90% prediction interval for the given data is $(`r pred_co2[2]`, `r pred_co2[3]`)$.
+<br />
 **(c)** Do the following:
 
 - Make a scatterplot of `CO2` versus `horse`. Use a different color point for each vehicle `type`. 
@@ -67,8 +136,51 @@ Load the data, and check its structure using `str()`. Verify that `type` is a fa
 - Add the fitted regression "lines" to the scatterplot with the same colors as their respective points (one line for each vehicle type). Comment on how well this line models the data. 
 - Give an estimate for the average change in `CO2` for a one foot-pound per second increase in `horse` for a vehicle of type `car`. 
 - Give a 90% prediction interval using this model for the `CO2` of a Subaru Impreza Wagon, which is a vehicle with 148 horsepower and is considered type `Both`. 
+```{r}
+epa_int_model = lm(CO2 ~ horse * type, data = epa_data)
 
+int_both = coef(epa_int_model)[1]
+slope_both = coef(epa_int_model)[2]
+
+int_car = coef(epa_int_model)[1] + coef(epa_int_model)[3]
+slope_car = coef(epa_int_model)[2] + coef(epa_int_model)[5]
+
+int_truck = coef(epa_int_model)[1] + coef(epa_int_model)[4]
+slope_truck = coef(epa_int_model)[2] + coef(epa_int_model)[6]
+
+
+colors = c("Dodgerblue","Darkgrey","Red")
+plot(CO2 ~ horse, data = epa_data, col = colors[type], main="CO2 vs Horsepower", xlab="Horsepower", ylab="CO2", pch = as.numeric(type), cex = 0.8)
+abline(int_both, slope_both, col = colors[1])
+abline(int_car, slope_car, col = colors[2])
+abline(int_truck, slope_truck, col = colors[3])
+legend("topleft", c("Both", "Car","Truck"), col = colors, pch = c(1,2,3))
+```
+
+<br />
+This models does a better job at modeling the relationship as it is able to clearly show that truck increases quicker than both which increases quicker than car.
+<br />
+
+```{r}
+pred_slope = coef(epa_int_model)[2] + coef(epa_int_model)[5]
+```
+<br />
+The average change in `CO2` would be $`r pred_slope`$.
+<br />
+
+```{r}
+pred_co2 = predict(epa_int_model, newdata = new_data, interval = "prediction", level = 0.90)
+```
+<br />
+The 90% prediction interval for the given data is $(`r pred_co2[2]`, `r pred_co2[3]`)$.
+<br />
 **(d)** Based on the previous plots, you probably already have an opinion on the best model. Now use an ANOVA $F$-test to compare the additive and interaction models. Based on this test and a significance level of $\alpha = 0.10$, which model is preferred?
+```{r}
+f_test = anova(epa_add_model, epa_int_model)
+```
+<br />
+Using an $F$-test to compare the additive and interaction models we are able to show that with a p-value of $`r f_test[2, 6]`$ which is considerably less than $\alpha = 0.10$ we would reject the additive model in favor of the interation model.
+<br />
 
 ***
 
@@ -93,15 +205,52 @@ For this exercise, we will use the data stored in [`hospital.csv`](hospital.csv)
 For this exercise, we will use `Age`, `Education`, `Income`, and `Sex` in an attempt to model `Blood`. Essentially, we are attempting to model white blood cell count using only demographic information.
 
 **(a)** Load the data, and check its structure using `str()`. Verify that `Education`, `Income`, and `Sex` are factors; if not, coerce them to be factors. What are the levels of `Education`, `Income`, and `Sex`?
+```{r}
+hosp_data = read_csv("hospital.csv")
+str(hosp_data)
+hosp_data$Education = as.factor(hosp_data$Education)
+hosp_data$Income = as.factor(hosp_data$Income)
+hosp_data$Sex = as.factor(hosp_data$Sex)
+```
+<br />
+
+  - `Education` levels: `r levels(hosp_data$Education)`
+  - `Income` levels: `r levels(hosp_data$Income)`
+  - `Sex` levels: `r levels(hosp_data$Sex)`
+
+<br />
 
 **(b)** Fit an additive multiple regression model with `Blood` as the response using `Age`, `Education`, `Income`, and `Sex` as predictors. What does `R` choose as the reference level for `Education`, `Income`, and `Sex`?
+```{r}
+hosp_add_model = lm(Blood ~ Age + Education + Income + Sex, data = hosp_data)
+```
+
+<br />
+`R` chooses "high" for `Education` and `Income` as it is alphabetical and "female" for `Sex`.
+<br />
 
 **(c)** Fit a multiple regression model with `Blood` as the response. Use the main effects of `Age`, `Education`, `Income`, and `Sex`, as well as the interaction of `Sex` with `Age` and the interaction of `Sex` and `Income`. Use a statistical test to compare this model to the additive model using a significance level of $\alpha = 0.10$. Which do you prefer?
-
+```{r}
+hosp_add_int_model = lm(Blood ~ Age + Education + Income + Sex + Sex * Age + Sex * Income, data = hosp_data)
+f_test = anova(hosp_add_model, hosp_add_int_model)
+```
+<br />
+Using an $F$-test to compare the additive and interaction models we are able to show that with a p-value of $`r f_test[2, 6]`$ which is slightly higher than $\alpha = 0.10$ we would fail to reject the additive model.
+<br />
 **(d)** Fit a model similar to that in **(c)**, but additionally add the interaction between `Income` and `Age` as well as a three-way interaction between `Age`, `Income`, and `Sex`. Use a statistical test to compare this model to the preferred model from **(c)** using a significance level of $\alpha = 0.10$. Which do you prefer?
-
+```{r}
+hosp_int_model = lm(Blood ~ Age + Education + Income + Sex + Income * Age + Sex * Age + Sex * Income + Age * Sex * Income, data = hosp_data)
+f_test = anova(hosp_add_model, hosp_int_model)
+```
+<br />
+Using an $F$-test to compare the model **(C)** and our new model we are able to show that with a p-value of $`r f_test[2, 6]`$ which is lower than $\alpha = 0.10$ we would reject the model we selected from **(c)**.
+<br />
 **(e)** Using the model in **(d)**, give an estimate of the change in average `Blood` for a one-unit increase in `Age` for a highly educated, low income, male patient.
-
+```{r}
+hosp_coef = coef(hosp_int_model)
+  (hosp_coef[2]+   (1 * hosp_coef[6])+  (1 * hosp_coef[8]) + (1 * 1 * hosp_coef[9]))*1 
+```
+<br />
 ***
 
 ## Exercise 3 (Hospital SUPPORT Data, Stay Duration)
@@ -139,8 +288,11 @@ where
 
 **(a)** Fit the model above. Also fit a smaller model using the provided `R` code.
 
-```{r, eval = FALSE}
+```{r message=FALSE, warning=FALSE}
+hospital = read_csv("hospital.csv")
 days_add = lm(Days ~ Pressure + Blood + Rate, data = hospital)
+days_int = lm(Days ~ Pressure * Blood * Rate, data = hospital)
+(anova_models = anova(days_add, days_int))
 ```
 
 Use a statistical test to compare the two models. Report the following:
@@ -150,10 +302,24 @@ Use a statistical test to compare the two models. Report the following:
 - The p-value of the test
 - A statistical decision using a significance level of $\alpha = 0.10$
 - Which model you prefer
+<br />
+<br />
+For this test we will be doing the following:
+<br/>
+    - Under $H_0$, $\beta_4 = \beta_5 = \beta_6 = 0$.
+<br/>
+    - Under $H_1$, $\beta_4, \beta_5, \beta_6 \neq 0$.
+<br />
+  + The value of test statistics  is $`r anova_models[2,5]`$. 
+  + The p-value of the test  is $`r anova_models[2,6]`$.
+  + Using $\alpha = 0.10$ value compared to p-value of $`r anova_models[2,6]`$, we would reject the null hypothesis.
+  + Therefore, we prefer the interaction model due to our $F$-test.
+<br />
 
 **(b)** Give an expression based on the model in the exercise description for the true change in length of hospital stay in days for a 1 bpm increase in `Rate` for a patient with a `Pressure` of 139 mmHg and a `Blood` of 10 gm/dL. Your answer should be a linear function of the $\beta$s.
-
+\[Y_i = \beta_0 + \beta_1 x_{1i}+ \epsilon_i\]
 **(c)** Give an expression based on the additive model in part **(a)** for the true change in length of hospital stay in days for a 1 bpm increase in `Rate` for a patient with a `Pressure` of 139 mmHg and a `Blood` of 10 gm/dL. Your answer should be a linear function of the $\beta$s.
+\[Y_i = \beta_0 + \beta_1 x_{1i}+ \epsilon_i\]
 
 ***
 
