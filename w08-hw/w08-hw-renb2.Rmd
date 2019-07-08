@@ -328,13 +328,9 @@ library(ggplot2)
 **(a)** Fit a linear model with `price` as the response variable $y$, and `carat` as the predictor $x$. Return the summary information of this model.
 ```{r}
 diamond_model = lm(price ~ carat, data = diamonds)
-summary = summary(diamond_model)
+summary_diamond = summary(diamond_model)
 ```
-<br />
-As we can see the summary information: <br />
-`r summary`
-<br />
-<br />
+
 **(b)** Plot a scatterplot of price versus carat and add the line for the fitted model in part **(a)**. Using a fitted versus residuals plot and/or a Q-Q plot, comment on the diagnostics. 
 ```{r}
 plot(price ~ carat, data = diamonds, col = "grey", pch = 20, xlab = "carat", ylab = "price", main = "Diamonds Scatter Plot")
@@ -371,7 +367,6 @@ Be reviewing the plot for fitted vs residuals we can see adjusting the response 
 **(e)** Use the model from part **(d)** to predict the price (in dollars) of a 3-carat diamond. Construct a 99% prediction interval for the price (in dollars).
 ```{r}
 new_carat = data.frame(carat = c(3))
-(pred = predict(log_pred_resp_model, newdata = new_carat, interval = c("prediction"), level = 0.99))
-exp(log_pred_resp_model$coef[1] + log_pred_resp_model$coef[2] * 3)
+exp(predict(log_pred_resp_model, newdata = new_carat, interval = c("prediction"), level = 0.99))
 ```
 
