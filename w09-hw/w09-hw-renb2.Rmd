@@ -109,6 +109,14 @@ plot_qq = function(model, pointcol = "dodgerblue", linecol = "darkorange") {
   qqline(resid(model), col = linecol, lwd = 2)
 }
 ```
+```{r}
+plot_fitted_resid(emp_small_model)
+```
+```{r}
+plot_qq(emp_small_model)
+```
+<br />
+Excluding one point we can see that the data is fairly evenly spread out and looking at the QQ plot, we can see that it follows the line mostly, except for a couple of points at the edges so it appears no assumptions have been violated.
 
 ***
 
@@ -132,6 +140,10 @@ Use `?Credit` to learn about this dataset.
 - Use fewer than 10 $\beta$ parameters
 
 Store your model in a variable called `mod_a`. Run the two given chunks to verify your model meets the requested criteria. If you cannot find a model that meets all criteria, partial credit will be given for meeting at least some of the criteria.
+```{r}
+mod_a = lm(Balance ~ log(Income) + Limit + Education + Gender + Education:Student + Married + Age:Married, data = Credit)
+
+```
 
 ```{r, message = FALSE, warning = FALSE}
 library(lmtest)
@@ -159,7 +171,7 @@ get_adj_r2 = function(model) {
 }
 ```
 
-```{r, eval = FALSE}
+```{r}
 get_loocv_rmse(mod_a)
 get_adj_r2(mod_a)
 get_bp_decision(mod_a, alpha = 0.01)
@@ -174,6 +186,9 @@ get_num_params(mod_a)
 - Use fewer than 25 $\beta$ parameters
 
 Store your model in a variable called `mod_b`. Run the two given chunks to verify your model meets the requested criteria. If you cannot find a model that meets all criteria, partial credit will be given for meeting at least some of the criteria.
+```{r}
+mod_b = lm(Balance ~ Income * Rating * Limit * Student, data = Credit)
+```
 
 ```{r, message = FALSE, warning = FALSE}
 library(lmtest)
@@ -201,7 +216,7 @@ get_adj_r2 = function(model) {
 }
 ```
 
-```{r, eval = FALSE}
+```{r}
 get_loocv_rmse(mod_b)
 get_adj_r2(mod_b)
 get_sw_decision(mod_b, alpha = 0.01)
