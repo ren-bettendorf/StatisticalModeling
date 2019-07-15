@@ -229,7 +229,7 @@ get_num_params(mod_b)
 
 For this exercise, use the `Sacramento` data from the `caret` package. Use the following code to perform some preprocessing of the data.
 
-```{r}
+```{r message=FALSE, warning=FALSE}
 library(caret)
 library(ggplot2)
 data(Sacramento)
@@ -261,6 +261,10 @@ sac_tst_data = sac_data[-sac_trn_idx, ]
 The training data should be used for all model fitting. Our goal is to find a model that is useful for predicting home prices.
 
 **(a)** Find a "good" model for `price`. Use any methods seen in class. The model should reach a LOOCV-RMSE below 77,500 in the training data. Do not use any transformations of the response variable.
+```{r}
+price_model = lm(price ~ beds * sqft * latitude * longitude, data = sac_trn_data)
+get_loocv_rmse(price_model)
+```
 
 **(b)** Is a model that achieves a LOOCV-RMSE below 77,500 useful in this case? That is, is an average error of 77,500 low enough when predicting home prices? To further investigate, use the held-out test data and your model from part **(a)** to do two things:
 
@@ -271,7 +275,24 @@ The training data should be used for all model fitting. Our goal is to find a mo
 - Plot the predicted versus the actual values and add the line $y = x$.
 
 Based on all of this information, argue whether or not this model is useful.
+```{r}
+n = nrow(sac_tst_data)
+test_actual = sac_tst_data$price
+test_predicted = predict(price_model, newdata = data.frame(beds = c(sac_tst_data$beds), sqft = c(sac_tst_data$sqft), latitude = c(sac_tst_data$latitude), longitude = c(sac_tst_data$longitude)))
+average_percent_error = (1/n) * sum(abs(test_predicted-test_actual)/test_predicted) *100
+```
 
+<br />
+The reported Average Percent Error: $`r average_percent_error`$.
+<br />
+```{r}
+plot(test_predicted, test_actual, col= "blue")
+abline(0, 1, lwd=2, col="darkorange")
+```
+<br />
+Even though the LOOCV-RMSE is quite high at 76,231 we can see from the graph that it does a fairly good job of predicting the values and dealing with the outliers that would skew the dataset.
+<br />
+<br />
 ***
 
 ## Exercise 4 (Does It Work?)
@@ -314,8 +335,9 @@ signif = c("x_1", "x_2", "x_3", "x_4", "x_5")
 We now simulate values for these `x` variables, which we will use throughout part **(a)**.
 
 ```{r}
-set.seed(420)
+set.seed(19890927)
 n = 100
+num_sims = 300
 x_1  = runif(n, 0, 10)
 x_2  = runif(n, 0, 10)
 x_3  = runif(n, 0, 10)
@@ -377,6 +399,38 @@ Note that in both cases, you could `sum()` the result to obtain the number of fa
 - Calculate and store the number of false positives for the models chosen by AIC and BIC.
 
 Calculate the rate of false positives and negatives for both AIC and BIC. Compare the rates between the two methods. Arrange your results in a well formatted table.
+```{r}
+set.seed(19890927)
+num_sims = 300
+false_negative_aic1 = rep(0, num_sims)
+false_negative_bic1 = rep(0, num_sims)
+false_positive_aic1 = rep(0, num_sims)
+false_positive_bic1 = rep(0, num_sims)
+
+for(i in 1:num_sims) {
+  sim_data_1 = data.frame(x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10,
+      y = beta_0 + beta_1 * x_1 + beta_2 * x_2 + beta_3 * x_3 + beta_4 * x_4 + 
+      beta_5 * x_5 + rnorm(n, 0 , sigma))
+  start_model = lm(y ~ ., data = sim_data_1)
+  aic_model = step(start_model, trace = 0)
+  n = length(resid(start_model))
+  bic_model = step(start_model, k = log(n), trace = 0)
+  
+  false_negative_aic1[i] = sum(!(signif %in% names(coef(aic_model))))
+  false_positive_aic1[i] = sum(names(coef(aic_model)) %in% not_sig)
+  false_negative_bic1[i] = sum(!(signif %in% names(coef(bic_model))))
+  false_positive_bic1[i] = sum(names(coef(bic_model)) %in% not_sig)
+}
+```
+```{r}
+library(knitr)
+sim_data_table = data.frame(StepMethod = c("AIC", "BIC"), 
+                           Negative = c(sum(false_negative_aic1)/(num_sims * 5), 
+                                        sum(false_negative_bic1)/(num_sims * 5)), 
+                           Positive = c(sum(false_positive_aic1)/(num_sims * 5), 
+                                        sum(false_positive_bic1)/(num_sims * 5)))
+kable(sim_data_table)
+```
 
 **(b)** Set a seed equal to your birthday; then, using the given data for each `x` variable below in `sim_data_2`, simulate the response variable `y` 300 times. Each time,
 
@@ -389,7 +443,7 @@ Calculate the rate of false positives and negatives for both AIC and BIC. Compar
 Calculate the rate of false positives and negatives for both AIC and BIC. Compare the rates between the two methods. Arrange your results in a well formatted table. Also compare to your answers in part **(a)** and suggest a reason for any differences.
 
 ```{r}
-set.seed(420)
+set.seed(19890927)
 x_1  = runif(n, 0, 10)
 x_2  = runif(n, 0, 10)
 x_3  = runif(n, 0, 10)
@@ -406,4 +460,35 @@ sim_data_2 = data.frame(x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10,
       beta_5 * x_5 + rnorm(n, 0 , sigma)
 )
 ```
+```{r}
+set.seed(19890927)
+num_sims = 300
+false_negative_aic2 = rep(0, num_sims)
+false_negative_bic2 = rep(0, num_sims)
+false_positive_aic2 = rep(0, num_sims)
+false_positive_bic2 = rep(0, num_sims)
 
+for(i in 1:num_sims) {
+  sim_data_2 = data.frame(x_1, x_2, x_3, x_4, x_5, x_6, x_7, x_8, x_9, x_10,
+  y = beta_0 + beta_1 * x_1 + beta_2 * x_2 + beta_3 * x_3 + beta_4 * x_4 + 
+      beta_5 * x_5 + rnorm(n, 0 , sigma))
+  start_model = lm(y ~ ., data = sim_data_2)
+  aic_model = step(start_model, trace = 0)
+  n = length(resid(start_model))
+  bic_model = step(start_model, k = log(n), trace = 0)
+  
+  false_negative_aic2[i] = sum(!(signif %in% names(coef(aic_model))))
+  false_positive_aic2[i] = sum(names(coef(aic_model)) %in% not_sig)
+  false_negative_bic2[i] = sum(!(signif %in% names(coef(bic_model))))
+  false_positive_bic2[i] = sum(names(coef(bic_model)) %in% not_sig)
+}
+```
+```{r}
+library(knitr)
+sim_data_table = data.frame(StepMethod = c("AIC", "BIC"), 
+                           Negative = c(sum(false_negative_aic2)/(num_sims * 5), 
+                                        sum(false_negative_bic2)/(num_sims * 5)), 
+                           Positive = c(sum(false_positive_aic2)/(num_sims * 5), 
+                                        sum(false_positive_bic2)/(num_sims * 5)))
+kable(sim_data_table)
+```
