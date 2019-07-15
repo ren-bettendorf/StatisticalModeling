@@ -19,21 +19,58 @@ options(scipen = 1, digits = 4, width = 80, fig.align = "center")
 
 The built-in dataset `longley` contains macroeconomic data for predicting employment. We will attempt to model the `Employed` variable.
 
-```{r, eval = FALSE}
+```{r, eval=FALSE}
 View(longley)
 ?longley
 ```
 
 **(a)** What is the largest correlation between any pair of predictors in the dataset?
-
+```{r}
+round(cor(longley), 2)
+```
+<br />
+The largest correlation between any pair of predictors is `Year` and `GNP` with a value of $1$.
+<br />
+<br />
 **(b)** Fit a model with `Employed` as the response and the remaining variables as predictors. Calculate and report the variance inflation factor (VIF) for each of the predictors. Which variable has the largest VIF? Do any of the VIFs suggest multicollinearity?
-
+```{r message=FALSE, warning=FALSE}
+emp_model = lm(Employed ~ ., data = longley)
+library(faraway)
+vif(emp_model)
+```
+<br />
+The largest VIF is `GNP`. Using the typical value of $5$ for a large multicollinearity we see that `GNP.deflator`, `GNP`, `unemployed`, `Population`, and `Year`.
+<br />
+<br />
 **(c)** What proportion of the observed variation in `Population` is explained by a linear relationship with the other predictors?
-
+```{r}
+pop_model = lm(Population ~ . - Employed, data = longley)
+prop = summary(pop_model)$r.squared
+```
+<br />
+The proportion of observed variation in `Population` is $`r prop`$.
+<br />
+<br />
 **(d)** Calculate the partial correlation coefficient for `Population` and `Employed` **with the effects of the other predictors removed**.
+```{r}
+emp_cor_model = lm(Employed ~ . - Population, data = longley)
+cor_value = cor(resid(pop_model), resid(emp_cor_model))
+```
 
+<br />
+The partial correlation coefficient for `Population` and `Employed` is  $`r cor_value`$.
+<br />
+<br />
 **(e)** Fit a new model with `Employed` as the response and the predictors from the model in **(b)** that were significant. (Use $\alpha = 0.05$.) Calculate and report the variance inflation factor for each of the predictors. Which variable has the largest VIF? Do any of the VIFs suggest multicollinearity?
+```{r}
+emp_small_model <- lm(Employed ~  Unemployed + Armed.Forces + Year, data = longley)
+vif(emp_small_model)
+```
 
+<br />
+By looking at the summary of the model in **(b)** we see that we would use `Unemployed`, `Armed.Forces`, and `Year` thus leading to the largest VIF is `Year` and none of these suggestion multicollinearity.
+<br />
+<br />
 **(f)** Use an $F$-test to compare the models in parts **(b)** and **(e)**. Report the following:
 
 - The null hypothesis
@@ -42,7 +79,21 @@ View(longley)
 - The p-value
 - A decision
 - Which model you prefer, **(b)** or **(e)**
-
+```{r}
+anova_emp = anova(emp_model, emp_small_model)
+```
+<br />
+ 
+  - Null Hypothesis: $H_0: \beta_{GNP.Deflator} = \beta_{GNP} = \beta_{Population} = 0$
+  - Alternative Hypothesis: $H_1: \beta_{GNP.Deflator}, \beta_{GNP}, \beta_{Population} \neq 0$
+  - Test Statistic: $`anova_emp[2, 5]`$.
+  - Distribution of the test satistic is F with DF 12 and 9.
+  - P-Value: $`r anova_emp[2, 6]`$.
+  - Decision: Fail to Reject $H_0$.
+  - Model Preference: We prefer the smaller model using `Unemployed`, `Armed.Forces`, and `Year`.
+  
+<br />
+<br />
 **(g)** Check the assumptions of the model chosen in part **(f)**. Do any assumptions appear to be violated?
 
 ```{r, echo = FALSE}
