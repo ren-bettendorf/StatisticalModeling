@@ -63,7 +63,7 @@ The partial correlation coefficient for `Population` and `Employed` is  $`r cor_
 <br />
 **(e)** Fit a new model with `Employed` as the response and the predictors from the model in **(b)** that were significant. (Use $\alpha = 0.05$.) Calculate and report the variance inflation factor for each of the predictors. Which variable has the largest VIF? Do any of the VIFs suggest multicollinearity?
 ```{r}
-emp_small_model <- lm(Employed ~  Unemployed + Armed.Forces + Year, data = longley)
+emp_small_model = lm(Employed ~  Unemployed + Armed.Forces + Year, data = longley)
 vif(emp_small_model)
 ```
 
@@ -115,8 +115,17 @@ plot_fitted_resid(emp_small_model)
 ```{r}
 plot_qq(emp_small_model)
 ```
+```{r}
+library(lmtest)
+bptest(emp_small_model)
+shapiro.test(resid(emp_small_model))$p.value
+```
+```{r}
+
+```
+
 <br />
-Excluding one point we can see that the data is fairly evenly spread out and looking at the QQ plot, we can see that it follows the line mostly, except for a couple of points at the edges so it appears no assumptions have been violated.
+Excluding one point we can see that the data is fairly evenly spread out and looking at the QQ plot, we can see that it follows the line mostly, except for a couple of points at the edges so it appears no assumptions have been violated. Furthermore, if we look at the Breusch-Pagan Test we can fail to reject that we do not have constant variance along with the Shapiro-Wilk Test for normality.
 
 ***
 
@@ -141,8 +150,7 @@ Use `?Credit` to learn about this dataset.
 
 Store your model in a variable called `mod_a`. Run the two given chunks to verify your model meets the requested criteria. If you cannot find a model that meets all criteria, partial credit will be given for meeting at least some of the criteria.
 ```{r}
-mod_a = lm(Balance ~ log(Income) + Limit + Education + Gender + Education:Student + Married + Age:Married, data = Credit)
-
+mod_a = lm(Balance ~ log(Income) + Limit + Education + Married + Education:Student + Married:Age, data = Credit)
 ```
 
 ```{r, message = FALSE, warning = FALSE}
@@ -492,3 +500,7 @@ sim_data_table = data.frame(StepMethod = c("AIC", "BIC"),
                                         sum(false_positive_bic2)/(num_sims * 5)))
 kable(sim_data_table)
 ```
+
+<br />
+As we can see from the first simulation we are not falsely excluding any significant predictors for either AIC or BIC, but it does choose more false positives for AIC over BIC due to AIC prefering a larger model. In the second simulation we see some false negatives due to the collinearity we introduced so the steps are choosing other `x_8`, `x_9`, or `x_10` sometimes due to this and we see more false positives as a result also as it is harder to remove these variables.
+<br />
