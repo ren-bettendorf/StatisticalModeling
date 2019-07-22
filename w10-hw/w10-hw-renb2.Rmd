@@ -62,15 +62,44 @@ Store the test statistics for two tests:
 
 - The Wald test for $H_0: \beta_2 = 0$, which we say follows a standard normal distribution for "large" samples
 - The likelihood ratio test for $H_0: \beta_2 = \beta_3 = 0$, which we say follows a $\chi^2$ distribution (with some degrees of freedom) for "large" samples
+```{r}
+num_sims = 2500
+beta_0 = 0.4
+beta_1 = -0.35
+wald_test =  rep(0, 2500)
+likelihood_ratio_test = rep(0, 2500)
+for (i in 1:num_sims)
+{
+  eta = beta_0 + beta_1 * x1
+  p = 1 / (1 + exp(-eta))
+  y = rbinom(n = sample_size, size = 1, prob = p)
+  good_model = glm(y ~ x1, family = "binomial")
+  add_model = glm(y ~ x1 + x2 + x3, family = "binomial")
+  wald_test[i] = summary(add_model)$coefficients["x2", "z value"]
+  likelihood_ratio_test[i] = anova(good_model, add_model, test = "LRT")$Deviance[2]
+}
+```
 
 **(b)** Plot a histogram of the empirical values for the Wald test statistic. Overlay the density of the true distribution assuming a large sample.
-
+```{r}
+hist(wald_test, prob = TRUE, breaks = 20, xlab = "Wald Test Statistic", main = "", border = "dodgerblue")
+curve(dnorm(x, mean = 0, sd=1), add = TRUE, col = "darkorange", lwd = 3)
+```
 **(c)** Use the empirical results for the Wald test statistic to estimate the probability of observing a test statistic larger than 1. Also report this probability using the true distribution of the test statistic assuming a large sample.
-
+```{r}
+pnorm(1, mean = mean(wald_test), sd = sd(wald_test), lower.tail = FALSE)
+pnorm(1, mean = 0, sd = 1, lower.tail = FALSE)
+```
 **(d)** Plot a histogram of the empirical values for the likelihood ratio test statistic. Overlay the density of the true distribution assuming a large sample.
-
+```{r}
+hist(likelihood_ratio_test, prob = TRUE, breaks = 20, xlab = "Likelihood Ration Test statistic", main = "", border = "dodgerblue")
+curve(dchisq(x, df=2), col="darkorange", add=TRUE, lwd = 3)
+```
 **(e)** Use the empirical results for the likelihood ratio test statistic to estimate the probability of observing a test statistic larger than 5. Also report this probability using the true distribution of the test statistic assuming a large sample.
-
+```{r}
+length(which((likelihood_ratio_test) > 5)) / length(likelihood_ratio_test)
+pchisq(5, df = 2, lower.tail=FALSE)
+```
 **(f)** Repeat **(a)**-**(e)** but with simulation using a smaller sample size of 10. Based on these results, is this sample size large enough to use the standard normal and $\chi^2$ distributions in this situation? Explain.
 
 ```{r}
@@ -80,7 +109,39 @@ x1 = rnorm(n = sample_size)
 x2 = rnorm(n = sample_size)
 x3 = rnorm(n = sample_size)
 ```
-
+```{r message=FALSE, warning=FALSE}
+num_sims = 2500
+beta_0 = 0.4
+beta_1 = -0.35
+wald_test =  rep(0, 2500)
+likelihood_ratio_test = rep(0, 2500)
+for (i in 1:num_sims)
+{
+  eta = beta_0 + beta_1 * x1
+  p = 1 / (1 + exp(-eta))
+  y = rbinom(n = sample_size, size = 1, prob = p)
+  good_model = glm(y ~ x1, family = "binomial")
+  add_model = glm(y ~ x1 + x2 + x3, family = "binomial")
+  wald_test[i] = summary(add_model)$coefficients["x2", "z value"]
+  likelihood_ratio_test[i] = anova(good_model, add_model, test = "LRT")$Deviance[2]
+}
+```
+```{r}
+hist(wald_test, prob = TRUE, breaks = 20, xlab = "Wald Test Statistic", main = "", border = "dodgerblue")
+curve(dnorm(x, mean = 0, sd=1), add = TRUE, col = "darkorange", lwd = 3)
+```
+```{r}
+pnorm(1, mean = mean(wald_test), sd = sd(wald_test), lower.tail = FALSE)
+pnorm(1, mean = 0, sd = 1, lower.tail = FALSE)
+```
+```{r}
+hist(likelihood_ratio_test, prob = TRUE, breaks = 20, xlab = "Likelihood Ratio Test statistic", main = "", border = "dodgerblue")
+curve(dchisq(x, df=2), col="darkorange", add=TRUE, lwd = 3)
+```
+```{r}
+length(which((likelihood_ratio_test) > 5)) / length(likelihood_ratio_test)
+pchisq(5, df = 2, lower.tail=FALSE)
+```
 ***
 
 ## Exercise 2 (Surviving the Titanic)
@@ -125,6 +186,10 @@ is the probability that a certain passenger survives given their attributes and
 - $x_4$ is the age in years of a passenger.
 
 Fit this model to the training data and report its deviance.
+```{r}
+titanic_model = glm(survived ~ pclass + sex + age + sex:age, data = ptitanic_trn, family = "binomial")
+titanic_deviance = deviance(titanic_model)
+```
 
 **(b)** Use the model fit in **(a)** and an appropriate statistical test to determine if class played a significant role in surviving on the Titanic. Use $\alpha = 0.01$. Report:
 
@@ -133,6 +198,10 @@ Fit this model to the training data and report its deviance.
 - The p-value of the test
 - A statistical decision
 - A practical conclusion
+```{r}
+null_model = glm(survived ~ sex + age + sex:age, data = ptitanic_trn, family = "binomial")
+comparemodels = anova(titanic_model, null_model, test = "LRT")
+```
 
 **(c)** Use the model fit in **(a)** and an appropriate statistical test to determine if an interaction between age and sex played a significant role in surviving on the Titanic. Use $\alpha = 0.01$. Report:
 
@@ -141,8 +210,29 @@ Fit this model to the training data and report its deviance.
 - The p-value of the test
 - A statistical decision
 - A practical conclusion
+```{r}
+null_model = glm(survived ~ pclass + sex + age, data = ptitanic_trn, family = "binomial")
+comparemodels = anova(titanic_model, null_model, test = "LRT")
+```
 
 **(d)** Use the model fit in **(a)** as a classifier that seeks to minimize the misclassification rate. Classify each of the passengers in the test dataset. Report the misclassification rate, the sensitivity, and the specificity of this classifier. (Use survived as the positive class.)
+```{r}
+ tst_pred = ifelse(predict(titanic_model, ptitanic_tst) > 0, "survived", "died")
+   #Misclassification rate
+ (misclassification_rate = mean(tst_pred != ptitanic_tst$survived))
+ 
+ #confusion matrix
+ make_conf_mat = function(predicted, actual) {
+   table(predicted = predicted, actual = actual)
+ }
+ conf_mat = make_conf_mat(predicted = tst_pred, actual = ptitanic_tst$survived)
+ 
+ #Sensitivity 
+ (sensitivity = conf_mat[2, 2] / sum(conf_mat[, 2]))
+ #Specificity
+ (specificity = conf_mat[1, 1] / sum(conf_mat[, 1]))
+   
+```
 
 ***
 
@@ -162,7 +252,28 @@ You should consider coercing the response to be a factor variable if it is not s
 - A model chosen via backwards selection using AIC. Use a model that considers all available predictors as well as their two-way interactions for the start of the search.
 
 For each, obtain a 5-fold cross-validated misclassification rate using the model as a classifier that seeks to minimize the misclassification rate. Based on this, which model is best? Relative to the best, are the other two underfitting or over fitting? Report the test misclassification rate for the model you picked as the best.
-
+```{r}
+wisc_train = read.csv("wisc-test.csv")
+wisc_test = read.csv("wisc-test.csv")
+wisc_train$class = as.factor(wisc_train$class)
+wisc_test$class = as.factor(wisc_test$class)
+```
+```{r,  warning = FALSE}
+smaller_additive = glm(class ~ radius + smoothness + texture, data = wisc_train, family = "binomial")
+full_additive = glm(class~ ., data = wisc_train, family=binomial)
+backward_aic_start = glm(class ~ (.)^2 , data = wisc_train, family = "binomial")
+mod_back_aic = step(backward_aic_start, direction = "backward",trace=0)
+```
+```{r,  message = FALSE,  warning = FALSE}
+library(boot)
+cv.glm(wisc_train, smaller_additive, K = 5)$delta[1]
+cv.glm(wisc_train, full_additive, K = 5)$delta[1]
+cv.glm(wisc_train, mod_back_aic, K = 5)$delta[1]
+```
+```{r}
+tst_pred = ifelse(predict(full_additive, wisc_test) > 0, "M", "B")
+mean(tst_pred != wisc_test$class)
+```
 **(b)** In this situation, simply minimizing misclassifications might be a bad goal since false positives and false negatives carry very different consequences. Consider the `M` class as the "positive" label. Consider each of the probabilities stored in `cutoffs` in the creation of a classifier using the **additive** model fit in **(a)**.
 
 ```{r}
@@ -178,4 +289,36 @@ $$
       0 & \hat{p}({\bf x}) \leq c 
 \end{cases}
 $$
+```{r , echo = FALSE, message = FALSE, warning = FALSE}
+#additive model selected as best from **a**
+cutoffs = seq(0.01, 0.99, by = 0.01)
+sensitivity = rep(0, length(cutoffs))
+specificity = rep(0, length(cutoffs))
+for( i in 1:length(cutoffs))
+{
+  tst_pred = ifelse(predict(full_additive, wisc_test, type = "response") > cutoffs[i], "M", "B")
+  
+  conf_mat = make_conf_mat(predicted = tst_pred, actual = wisc_test$class)
+  
+  sensitivity[i] <- conf_mat[2, 2] / sum(conf_mat[, 2])
+  specificity[i] <- conf_mat[1, 1] / sum(conf_mat[, 1])
+  
+}
+library(lattice)
+xyplot(sensitivity + specificity ~ cutoffs, ylab = "Sensitivity/Specificity",auto.key=TRUE, main = "For full additive model")
+#Smaller additive model
+sensitivity = rep(0, length(cutoffs))
+specificity = rep(0, length(cutoffs))
+for( i in 1:length(cutoffs))
+{
+  tst_pred = ifelse(predict(smaller_additive, wisc_test, type = "response") > cutoffs[i], "M", "B")
+
+  conf_mat = make_conf_mat(predicted = tst_pred, actual = wisc_test$class)
+  
+  sensitivity[i] = conf_mat[2, 2] / sum(conf_mat[, 2])
+  specificity[i] = conf_mat[1, 1] / sum(conf_mat[, 1])
+  
+}
+xyplot(sensitivity + specificity ~ cutoffs, ylab = "Sensitivity/Specificity",auto.key=TRUE, main ="For smaller additive model")
+```
 
